@@ -1,0 +1,258 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# AdmUsers #WebHash# $skcv_hash");
+  text_open($l_admusers2);
+  // Recibir variables
+  $showdata_form = receive_variable("POST", "showdata_form");
+  $record_id = receive_variable("POST", "record_id");
+  $in_search = receive_variable("POST", "in_search");
+  $in_searchfor = receive_variable("POST", "in_searchfor");
+  $in_searchin = receive_variable("POST", "in_searchin");
+  $pageNumber = receive_variable("POST", "pageNumber");
+
+  if ($in_search == 1) {
+    opslog("#UserID# $skcv_user #Action# AdmUsers #WebHash# $skcv_hash #Result# OK Search for: $in_searchfor En: $in_searchin");
+  }
+  if ($showdata_form == 1) {
+    opslog("#UserID# $skcv_user #Action# AdmUsers #WebHash# $skcv_hash #Result# OK View Details user: $record_id");
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-9\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_userdata</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    $q_dt  = "select * from USERS u, USERLEVELS l, USERSTATUS s where u.level_id=l.level_id and ";
+    $q_dt .= "u.user_id='$record_id' and binary u.user_status=binary s.us_id and ";
+    $q_dt .= "u.level_id<='$skcv_level_id';";
+    $p_dt = db_query($q_dt);
+    while ($dt=$p_dt->fetch_object()) {
+      table_row("fa fa-info-circle", "$l_id:", "", "none", "$dt->user_id");
+      table_row("fa fa-arrow-circle-o-right", "$l_level:", "", "none", "$dt->level_name");
+      table_row("fa fa-user", "$l_username:", "", "none", "$dt->user_username");
+      table_row("fa fa-user", "$l_name:", "", "none", "$dt->user_name");
+      table_row("fa fa-user", "$l_idc:", "", "none", "$dt->user_idc");
+      table_row("fa fa-calendar", "$l_dob:", "", "none", "".proc_date($dt->user_dateofbirth)."");
+      table_row("fa fa-envelope", "$l_email:", "", "none", "$dt->user_email");
+      table_row("fa fa-phone", "$l_phonenumber:", "", "none", "$dt->user_phonenumber");
+      table_row("fa fa-map-o", "$l_city:", "", "none", "$dt->user_city");
+      table_row("fa fa-map-marker", "$l_address:", "", "none", "$dt->user_address");
+      table_row("fa fa-location-arrow", "$l_department:", "", "none", "$dt->user_department");
+      table_row("fa fa-calendar", "$l_createdon:", "", "none", "".proc_date(substr($dt->user_createddate,0,10))."");
+      table_row("fa fa-user", "$l_createdby:", "", "none", "$dt->user_createdbyname [$dt->user_createdbyid] ($dt->user_createdip)");
+      if ($dt->user_moddate != "0000-00-00 00:00:00") {
+        table_row("fa fa-calendar", "$l_modifiedon:", "", "none", "".proc_date(substr($dt->user_moddate,0,10))." $l_at ".substr($dt->user_moddate,11,8)."");
+        table_row("fa fa-user", "$l_modifiedby:", "", "none", "$dt->user_modbyname [$dt->user_modbyid] ($dt->user_modip)");
+      }
+      $userstatustxt = $dt->user_status;
+      table_row("fa fa-certificate", "$l_status:", "", "none", "$dt->us_name");
+      table_row("fa fa-calendar", "$l_statuson:", "", "none", "".proc_date(substr($dt->user_statusdate,0,10))." $l_at ".substr($dt->user_statusdate,11,8)."");
+      table_row("fa fa-user", "$l_statusby:", "", "none", "$dt->user_statusbyname [$dt->user_statusbyid] ($dt->user_statusip)");
+      $udn_mostrar = "";
+      $logintxt = $l_login_nook;
+      if ($dt->user_login == 1) { $logintxt = $l_login_ok; }
+      table_row("fa fa-sign-in", "$l_login:", "", "none", "$logintxt");
+      if ($dt->user_login == 1) {
+        table_row("fa fa-calendar", "$l_logindate:", "", "none", "".proc_date(substr($dt->user_logindatetime,0,10))." $l_at ".substr($dt->user_logindatetime,11,8)."");
+        table_row("fa fa-map-pin", "$l_loginfrom:", "", "none", "$dt->user_loginfrom");
+        table_row("fa fa-firefox", "$l_loginusing:", "", "none", "$dt->user_loginclient");
+        table_row("fa fa-calendar-minus-o", "$l_loginexpires:", "", "none", "".proc_date(substr($dt->user_loginexpires,0,10))." $l_at ".substr($dt->user_loginexpires,11,8)."");
+      } else {
+        if (substr($dt->user_logindatetime,0,10) == "0000-00-00") {
+          table_row("fa fa-calendar", "$l_loginlastdate:", "", "none", "$l_loginnotyet");
+        } else {
+          table_row("fa fa-calendar", "$l_loginlastdate:", "", "none", "".proc_date(substr($dt->user_logindatetime,0,10))." $l_at ".substr($dt->user_logindatetime,11,8)."");
+          table_row("fa fa-map-pin", "$l_loginfrom:", "", "none", "$dt->user_loginfrom");
+          table_row("fa fa-firefox", "$l_loginusing:", "", "none", "$dt->user_loginclient");
+        }
+      }
+      $updateuser  = "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=updusers\">\n";
+      $updateuser .= "<input name=\"identif_form\" value=\"$dt->user_id\" type=\"hidden\">\n";
+      $updateuser .= "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+      $updateuser .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-pencil-square-o\"></i></button>\n";
+
+      $updateuser .= "</form>\n";
+      table_row("fa fa-pencil-square-o", "$l_modifyuser:", "", "none", "$updateuser");
+    }
+    echo "</table>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  } else {
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_search</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    echo "$l_searchfor: <input type=\"text\" value=\"$in_searchfor\" name=\"in_searchfor\"> $l_searchin ";
+    echo "<select name=\"in_searchin\">\n";
+    echo " <option value=\"\">--</option>\n";
+    if ($in_searchin == "user_id") { echo " <option value=\"user_id\" selected>$l_id</option>\n"; }
+    else { echo " <option value=\"user_id\">$l_id</option>\n"; }
+    if ($in_searchin == "user_username") { echo " <option value=\"user_username\" selected>$l_username</option>\n"; }
+    else { echo " <option value=\"user_username\">$l_username</option>\n"; }
+    if ($in_searchin == "usuario_nombre") { echo " <option value=\"usuario_nombre\" selected>$l_name</option>\n"; }
+    else { echo " <option value=\"usuario_nombre\">$l_name</option>\n"; }
+    if ($in_searchin == "user_idc") { echo " <option value=\"user_idc\" selected>$l_idc</option>\n"; }
+    else { echo " <option value=\"user_idc\">$l_idc</option>\n"; }
+    if ($in_searchin == "user_email") { echo " <option value=\"user_email\" selected>$l_email</option>\n"; }
+    else { echo " <option value=\"user_email\">$l_email</option>\n"; }
+    if ($in_searchin == "user_phonenumber") { echo " <option value=\"user_phonenumber\" selected>$l_phonenumber</option>\n"; }
+    else { echo " <option value=\"user_phonenumber\">$l_phonenumber</option>\n"; }
+    if ($in_searchin == "user_idcudad") { echo " <option value=\"user_idcudad\" selected>$l_city</option>\n"; }
+    else { echo " <option value=\"user_idcudad\">$l_city</option>\n"; }
+    if ($in_searchin == "user_address") { echo " <option value=\"user_address\" selected>$l_address</option>\n"; }
+    else { echo " <option value=\"user_address\">$l_address</option>\n"; }
+    if ($in_searchin == "usuario_departamento") { echo " <option value=\"usuario_departamento\" selected>$l_department</option>\n"; }
+    else { echo " <option value=\"usuario_departamento\">$l_department</option>\n"; }
+    echo "</select>\n";
+    echo "<input name=\"in_search\" value=\"1\" type=\"hidden\">\n";
+    echo "<button type=\"submit\" class=\"btn btn-success\"><i class=\"fa fa-search\"></i> $l_search</button>";
+    echo "</form>\n";
+    echo "<span style=\"font-size: 14px\"><strong>$l_note:</strong> $l_reminderwildcard</span>";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-10\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_administration</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    $q_c  = "select * from USERS u, USERLEVELS l, USERSTATUS s where u.level_id=l.level_id and ";
+    $q_c .= "binary u.user_status=binary s.us_id and u.level_id<='$skcv_level_id' ";
+    if ($in_search == 1) {
+      if ($in_searchin != "") {
+        $q_c .= "and $in_searchin like '$in_searchfor' ";
+      }
+    }
+    $q_c .= "order by u.user_status desc, u.user_name, u.level_id asc;";
+    $p_c = db_query($q_c);
+    $total = $p_c->num_rows;
+    if ($pageNumber == "") { $pageNumber = 1; }
+    $y = 1;
+    $num = 0;
+    echo "<table class=\"table-responsive table-condensed\">\n";
+    echo " <tr>\n";
+    echo "  <td>Resultados:</td>\n";
+    while ($total >= $y ) {
+      $num = ($y-1) + $perPage;
+      if ($num > $total ) {
+        $num = $total;
+      }
+      if ( $y == $pageNumber ) {
+        if ($y == $num) {
+          echo "<td>[$y]</td>\n";
+        } else {
+          echo "<td>[$y-$num]</td>\n";
+        }
+      } else {
+        if ($in_search == 1) {
+          echo "<td>";
+          echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<input name=\"pageNumber\" value=\"$y\" type=\"hidden\">\n";
+          echo "<input name=\"in_search\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"in_searchin\" value=\"$in_searchin\" type=\"hidden\">\n";
+          echo "<input name=\"in_searchfor\" value=\"$in_searchfor\" type=\"hidden\">\n";
+          echo "<button type=\"submit\" class=\"btn btn-xs btn-success\">$y-$num</button>\n";
+          echo "</form>\n";
+          echo "</td>";
+        } else {
+          echo "<td>";
+          echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<input name=\"pageNumber\" value=\"$y\" type=\"hidden\">\n";
+          echo "<button type=\"submit\" class=\"btn btn-xs btn-success\">$y-$num</button>\n";
+          echo "</form>\n";
+          echo "</td>";
+        }
+      }
+      $y = $y + $perPage;
+    }
+    echo " </tr>\n";
+    echo "</table>\n";
+    $origen = $pageNumber-1;
+    $q_c  = "select * from USERS u, USERLEVELS l, USERSTATUS s where u.level_id=l.level_id and ";
+    $q_c .= "binary u.user_status=binary s.us_id and u.level_id<='$skcv_level_id' ";
+    if ($in_search == 1) {
+      if ($in_searchin != "") {
+        $q_c .= "and $in_searchin like '$in_searchfor' ";
+      }
+    }
+    $q_c .= "order by u.user_status desc, u.user_name, u.level_id asc limit $origen,$perPage;";
+    $p_c = db_query($q_c);
+    echo "      </div>\n";
+    echo "      <div class=\"panel-heading\">$l_selectuser</div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    $p_c = db_query($q_c);
+    echo "<tr>\n";
+    table_header("<span style=\"font-size: 14px\">$l_id:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_name:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_username:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_status:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_showdata:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_modifydata:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_changepass:</span>");
+    table_header("<span style=\"font-size: 14px\">Asignar<br />U. de Negocio</span>");
+    table_header("<span style=\"font-size: 14px\">Asignar<br />Sucursales</span>");
+    echo "</tr>\n";
+    while ($pu = $p_c->fetch_object()) {
+      if ($pu->user_status != 2) {
+        echo " <tr class=\"danger\">\n";
+      } else {
+        echo " <tr>\n";
+      }
+      echo "<td class=\"text-right\"><span style=\"font-size: 14px\">$pu->user_id</span></td>\n";
+      echo "<td><span style=\"font-size: 14px\">$pu->user_name</span></td>\n";
+      echo "<td><span style=\"font-size: 14px\">$pu->user_username</span></td>\n";
+      $estado_m = "<font color=\"#800000\"><i class=\"fa fa-times-circle-o\"></i></font>";
+      if ($pu->user_status == 2) {
+        $estado_m = "<font color=\"#008000\"><i class=\"fa fa-check-circle-o\"></i></font>";
+      }
+      echo "<td class=\"text-center\"><span style=\"font-size: 14px\">$estado_m</span></td>\n";
+      echo "<td class=\"text-center\">";
+      echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      echo "<input name=\"record_id\" value=\"$pu->user_id\" type=\"hidden\">\n";
+      echo "<input name=\"showdata_form\" value=\"1\" type=\"hidden\">\n";
+      echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-eye\"></i></button>\n";
+      echo "</form>\n";
+      echo "</td>\n";
+      echo "<td class=\"text-center\">";
+      echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=updusers\">\n";
+      echo "<input name=\"identif_form\" value=\"$pu->user_id\" type=\"hidden\">\n";
+      echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+      echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-pencil-square-o\"></i></button>\n";
+      echo "</form>\n";
+      echo "</td>\n";
+      echo "<td class=\"text-center\">\n";
+      echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=updatepassusers\">\n";
+      echo "<input name=\"record_id\" value=\"$pu->user_id\" type=\"hidden\">\n";
+      echo "<input name=\"showdata_form\" value=\"1\" type=\"hidden\">\n";
+      echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-key\"></i></button>\n";
+      echo "</form>\n";
+      echo "</td>\n";
+      echo "<td class=\"text-center\">\n";
+      echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=asignarudn\">\n";
+      echo "<input name=\"in_usuarioudn\" value=\"$pu->user_id\" type=\"hidden\">\n";
+      echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-briefcase\"></i></button>\n";
+      echo "</form>\n";
+      echo "</td>\n";
+      echo "<td class=\"text-center\">\n";
+      echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=asignarciudades\">\n";
+      echo "<input name=\"in_usuariociudad\" value=\"$pu->user_id\" type=\"hidden\">\n";
+      echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-building\"></i></button>\n";
+      echo "</form>\n";
+      echo "</td>\n";
+      echo "</tr>\n";
+    }
+    echo "</table>\n";
+    echo "<a href=\"".$_SERVER['PHP_SELF']."?action=createuser\"><i class=\"fa fa-user-plus\"></i> $l_presshere</a> $l_tocreateusers<br />\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

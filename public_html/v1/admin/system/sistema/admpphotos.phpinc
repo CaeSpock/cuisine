@@ -1,0 +1,335 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# AdmPPhotos #WebHash# $skcv_hash");
+  text_open($l_admpphotos);
+  // Recibir variables
+  $in_sent = receive_variable("POST", "in_sent");
+  $in_add = receive_variable("POST", "in_add");
+  $in_del = receive_variable("POST", "in_del");
+  $in_upd = receive_variable("POST", "in_upd");
+  $in_product = receive_variable("POST", "in_product");
+  $in_photoid = receive_variable("POST", "in_photoid");
+  $in_photopdesc = receive_variable("POST", "in_photopdesc");
+  $in_file = receive_variable("POST", "in_file");
+  $doit = receive_variable("POST", "doit");
+
+  $in_photocat = "2"; // 2 = Products
+  if ($in_sent == 1) {
+    if ($in_del != 1 && $in_upd != 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-info\">\n";
+      echo "      <div class=\"panel-heading\">$l_currentpphotos</div>\n";
+      echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+      $s_p = "select * from PRODUCTS p, CATEGORIES c where p.cat_id=c.cat_id and prod_id='$in_product' limit 1;";
+      $q_p = db_query($s_p);
+      $p_p = $q_p->fetch_object();
+      table_row("fa fa-file", "$l_prodname:", "", "none", "$p_p->prod_name");
+      table_row("fa fa-briefcase", "$l_categorie:", "", "none", "$p_p->cat_name");
+      table_row("fa fa-file", "$l_productdesc:", "", "none", "$p_p->prod_desc");
+      $textprice = "$l_currency ";
+      $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+      $q_price = db_query($s_price);
+      $p_price = $q_price->fetch_object();
+      $textprice .= number_format($p_price->price_price,2);
+      table_row("fa fa-money", "$l_price:", "", "none", "$textprice");
+      echo "</table>\n";
+      echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+      $counter = 1;
+      $s_ph = "select * from PHOTOS where photo_prodcat='$in_product' and photo_cat='$in_photocat' and photo_status='1' order by photo_createddate;";
+      $q_ph = db_query($s_ph);
+      while ($p_ph = $q_ph->fetch_object()) {
+        if ($counter == 1) { echo "<tr>\n"; }
+        echo "  <td align=\"center\">\n";
+        $updphoto  = "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=admpphotos\">\n";
+        $updphoto .= "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+        $updphoto .= "<input name=\"in_photoid\" value=\"$p_ph->photo_id\" type=\"hidden\">\n";
+        $updphoto .= "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+        $updphoto .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        $updphoto .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-pencil\"></i></button>\n";
+        $updphoto .= "</form>\n";
+        $delphoto  = "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=admpphotos\">\n";
+        $delphoto .= "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+        $delphoto .= "<input name=\"in_photoid\" value=\"$p_ph->photo_id\" type=\"hidden\">\n";
+        $delphoto .= "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+        $delphoto .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        $delphoto .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-times\"></i></button>\n";
+        $delphoto .= "</form>\n";
+        echo "    <table border=\"0\"><tr><td>$updphoto</td><td>$delphoto</td></tr></table>\n";
+        echo "    <img class=\"img-responsive\" src=\"$webphotos/$p_ph->photo_filename\" alt=\"$p_ph->photo_desc\" width=\"200\">\n";
+        echo "  </td>\n";
+        if ($counter == 3) { echo "</tr>\n"; $counter ==1; }
+        $counter++;
+      }
+      echo "</table>\n";
+      echo "      <div class=\"panel-body\">\n";
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+      if ($in_add == 1) {
+        $file_name = $_FILES['in_file']['name'];
+        $file_type = $_FILES['in_file']['type'];
+        $file_tmpname = $_FILES['in_file']['tmp_name'];
+        $file_size = $_FILES['in_file']['size'];
+        $file_error = $_FILES['in_file']['error'];
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-9\">\n";
+        echo "    <div class=\"panel panel-info\">\n";
+        echo "      <div class=\"panel-heading\">$l_photoreceived</div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+        table_row("fa fa-file", "$l_filename:", "", "none", "$file_name");
+        table_row("fa fa-file-text-o", "$l_filetype:", "", "none", "$file_type");
+        $filesize = DownloadSize($file_size);
+        table_row("fa fa-file-image-o", "$l_filesize:", "", "none", "$filesize");
+        table_row("fa fa-photo", "$l_photodesc:", "" , "none", "$in_photopdesc");
+        echo "</table>\n"; 
+        $error = 0;
+        $errortext = "";
+        $errorgraph = "";
+        eval_null($file_size, "$l_filesize");
+        eval_zero($file_size, "$l_filesize");
+        eval_repdb("$file_name", "PHOTOS", "photo_filename", "and photo_cat='2'", $l_filename);
+        if ($file_error != 0) {
+          $error = 1;
+          $errortext .= $phpFileUploadErrors[$file_error]."<br />\n";
+          $errorgraph .= $label_nook;
+        } else {
+          $errorgraph .= $label_ok;
+        }
+        $fileinfo = getimagesize($file_tmpname);
+        if ($fileinfo === FALSE) {
+          $error = 1;
+          $errortext .= $l_errorimage1."<br />\n";
+          $errorgraph .= $label_nook;
+        } else {
+          $errorgraph .= $label_ok;
+        }
+        if (($fileinfo[2] !== IMAGETYPE_GIF) && ($fileinfo[2] !== IMAGETYPE_JPEG) && ($fileinfo[2] !== IMAGETYPE_PNG)) {
+          $error = 1;
+          $errortext .= $l_errorimage2."<br />\n";
+          $errorgraph .= $label_nook;
+        } else {
+          $errorgraph .= $label_ok;
+        }
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+        } else {
+          $filelocation = $pathphotos ."/". basename($file_name);
+          $uploadresult = "";
+          if (move_uploaded_file($file_tmpname, $filelocation)) {
+            $uploadresult = $l_uploadok;
+          } else {
+            $uploadresult = $l_uploadnook;
+            $error = 1;
+          }
+          table_row("fa fa-file", "$l_uploading:", "", "none", $uploadresult);
+          if ($error != 1) {
+            $pu  = "insert into PHOTOS (photo_desc, photo_prodcat, photo_cat, photo_filename, ";
+            $pu .= "photo_type, photo_size, photo_status, photo_createdbyid, ";
+            $pu .= "photo_createdbyname, photo_createddate, photo_createdip) VALUES(";
+            $pu .= "'$in_photopdesc', '$in_product', '$in_photocat', '$file_name', '$file_type', ";
+            $pu .= "'$filesize', '1', '$skcv_user_id', '$skcv_user_name', ";
+            $pu .= "'$date $time', '$user_ip');";
+            $qi = db_query($pu);
+            if ($dblink->error == null) {
+              $upd_result = $label_ok;
+              $productid = $dblink->insert_id;
+            } else {
+              $upd_result = $label_nook;
+              $productid = 0;
+            }
+            table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$upd_result");
+            opslog("#UserID# $skcv_user #Action# AdmPPhotos #WebHash# $skcv_hash #Result# OK $l_photoadd ID: $productid $file_name - $l_product $in_product - $l_photodesc: $in_photopdesc");
+          }
+        }
+        echo "</table>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      } else {
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-9\">\n";
+        echo "    <div class=\"panel panel-info\">\n";
+        echo "      <div class=\"panel-heading\">$l_photopadd</div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+        table_row("fa fa-font", "$l_photodesc:", "in_photopdesc", "text", "", "$l_name");
+        $in_filename  = "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"1000000\" />\n";
+        $in_filename .= "<input name=\"in_file\" type=\"file\" />\n";
+        table_row("fa fa-photo", "$l_filename:", "", "none", "$in_filename");
+        echo "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_photoadd</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+        echo "$l_important:<br />\n";
+        echo "$l_reminderphoto<br />\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      }
+    } else {
+      if ($in_upd == 1) {
+        if ($doit == 1) {
+          echo "<div class=\"row\">\n";
+          echo "  <div class=\"col-md-7\">\n";
+          echo "    <div class=\"panel panel-info\">\n";
+          echo "      <div class=\"panel-heading\">$l_photoupd</div>\n";
+          echo "      <div class=\"panel-body\">\n";
+          echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+          $ut = "update PHOTOS set photo_desc='$in_photopdesc', photo_moddate='$date $time', ";
+          $ut .= "photo_modbyid='$skcv_user_id', photo_modbyname='$skcv_user_name', ";
+          $ut .= "photo_modip='$user_ip' where photo_prodcat='$in_product' ";
+          $ut .= "and photo_id='$in_photoid' and photo_status='1';";
+          $qi = db_query($ut);
+          if ($dblink->error == null) {
+            $upd_result = $label_ok;
+          } else {
+            $upd_result = $label_nook;
+          }
+          table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$upd_result");
+          opslog("#UserID# $skcv_user #Action# AdmPPhotos #WebHash# $skcv_hash #Result# OK $l_photoupd ID: $in_photoid $l_product: $in_product $l_photodesc: $in_photopdesc");
+          echo "</table>\n";
+          echo "      </div>\n";
+          echo "    </div>\n";
+          echo "  </div>\n";
+          echo "</div>\n";
+        } else {
+          echo "<div class=\"row\">\n";
+          echo "  <div class=\"col-md-7\">\n";
+          echo "    <div class=\"panel panel-info\">\n";
+          echo "      <div class=\"panel-heading\">$l_photoupd</div>\n";
+          echo "      <div class=\"panel-body\">\n";
+          echo "        $l_updatedata2<br />\n";
+          echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+          $s_p = "select * from PRODUCTS p, CATEGORIES c where p.cat_id=c.cat_id and prod_id='$in_product' limit 1;";
+          $q_p = db_query($s_p);
+          $p_p = $q_p->fetch_object();
+          table_row("fa fa-file", "$l_prodname:", "", "none", "$p_p->prod_name");
+          table_row("fa fa-briefcase", "$l_categorie:", "", "none", "$p_p->cat_name");
+          table_row("fa fa-file", "$l_productdesc:", "", "none", "$p_p->prod_desc");
+          $textprice = "$l_currency ";
+          $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+          $q_price = db_query($s_price);
+          $p_price = $q_price->fetch_object();
+          $textprice .= number_format($p_price->price_price,2);
+          table_row("fa fa-money", "$l_price:", "", "none", "$textprice");
+          $s_ph = "select * from PHOTOS where photo_prodcat='$in_product' and photo_id='$in_photoid' limit 1;";
+          $q_ph = db_query($s_ph);
+          $p_ph = $q_ph->fetch_object();
+          $textphoto = "<img class=\"img-responsive\" src=\"$webphotos/$p_ph->photo_filename\" alt=\"$p_ph->photo_desc\" width=\"200\">\n";
+          table_row("fa fa-photo", "$l_photo:", "", "none", "$textphoto");
+          table_row("fa fa-photo", "$l_photodesc:", "in_photopdesc", "text", "$p_ph->photo_desc", "$l_photodesc");
+          echo "</table>\n";
+          echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+          echo "<input name=\"in_photoid\" value=\"$in_photoid\" type=\"hidden\">\n";
+          echo "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"doit\" value=\"1\" type=\"hidden\">\n";
+          $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+          $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+          echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+          echo "</form>\n";
+          echo "      </div>\n";
+          echo "    </div>\n";
+          echo "  </div>\n";
+          echo "</div>\n";
+        }
+      }
+      if ($in_del == 1) {
+        if ($doit == 1) {
+          echo "<div class=\"row\">\n";
+          echo "  <div class=\"col-md-7\">\n";
+          echo "    <div class=\"panel panel-info\">\n";
+          echo "      <div class=\"panel-heading\">$l_photodel</div>\n";
+          echo "      <div class=\"panel-body\">\n";
+          echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+          $ut = "update PHOTOS set photo_status='0', photo_moddate='$date $time', ";
+          $ut .= "photo_modbyid='$skcv_user_id', photo_modbyname='$skcv_user_name', ";
+          $ut .= "photo_modip='$user_ip' where photo_prodcat='$in_product' ";
+          $ut .= "and photo_id='$in_photoid' and photo_status='1';";
+          $qi = db_query($ut);
+          if ($dblink->error == null) {
+            $upd_result = $label_ok;
+          } else {
+            $upd_result = $label_nook;
+          }
+          table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$upd_result");
+          opslog("#UserID# $skcv_user #Action# AdmPPhotos #WebHash# $skcv_hash #Result# OK $l_photodel ID: $in_photoid $l_product: $in_product");
+          echo "</table>\n";
+          echo "      </div>\n";
+          echo "    </div>\n";
+          echo "  </div>\n";
+          echo "</div>\n";
+        } else {
+          echo "<div class=\"row\">\n";
+          echo "  <div class=\"col-md-7\">\n";
+          echo "    <div class=\"panel panel-info\">\n";
+          echo "      <div class=\"panel-heading\">$l_photodel</div>\n";
+          echo "      <div class=\"panel-body\">\n";
+          echo "        $l_photodelconfirm<br />\n";
+          echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+          $s_p = "select * from PRODUCTS p, CATEGORIES c where p.cat_id=c.cat_id and prod_id='$in_product' limit 1;";
+          $q_p = db_query($s_p);
+          $p_p = $q_p->fetch_object();
+          table_row("fa fa-file", "$l_prodname:", "", "none", "$p_p->prod_name");
+          table_row("fa fa-briefcase", "$l_categorie:", "", "none", "$p_p->cat_name");
+          table_row("fa fa-file", "$l_productdesc:", "", "none", "$p_p->prod_desc");
+          $textprice = "$l_currency ";
+          $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+          $q_price = db_query($s_price);
+          $p_price = $q_price->fetch_object();
+          $textprice .= number_format($p_price->price_price,2);
+          table_row("fa fa-money", "$l_price:", "", "none", "$textprice");
+          $s_ph = "select * from PHOTOS where photo_prodcat='$in_product' and photo_id='$in_photoid' limit 1;";
+          $q_ph = db_query($s_ph);
+          $p_ph = $q_ph->fetch_object();
+          $textphoto = "<img class=\"img-responsive\" src=\"$webphotos/$p_ph->photo_filename\" alt=\"$p_ph->photo_desc\" width=\"200\">\n";
+          table_row("fa fa-photo", "$l_photo:", "", "none", "$textphoto");
+          table_row("fa fa-photo", "$l_photodesc:", "", "none", "$p_ph->photo_desc");
+          echo "</table>\n";
+          echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+          echo "<input name=\"in_photoid\" value=\"$in_photoid\" type=\"hidden\">\n";
+          echo "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"doit\" value=\"1\" type=\"hidden\">\n";
+          $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+          $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+          echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+          echo "</form>\n";
+          echo "      </div>\n";
+          echo "    </div>\n";
+          echo "  </div>\n";
+          echo "</div>\n";
+        } 
+      }
+    }
+  } else {
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-info\">\n";
+    echo "      <div class=\"panel-heading\">$l_admpphotos</div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "       $l_restricted\n";
+    go_back();
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

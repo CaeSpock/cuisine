@@ -1,0 +1,77 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# ViewReservations #WebHash# $skcv_hash");
+  text_open($l_viewreservations);
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-7\">\n";
+  echo "    <div class=\"panel panel-primary\">\n";
+  echo "      <div class=\"panel-heading\"><strong>$l_dmreservationactive</strong></div>\n";
+  echo "      <div class=\"panel-body\">\n";
+  echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+  echo " <tr>\n";
+  table_header("<span style=\"font-size: 14px\">$l_name</span>");
+  table_header("<span style=\"font-size: 14px\">$l_email</span>");
+  table_header("<span style=\"font-size: 14px\">$l_product</span>");
+  table_header("<span style=\"font-size: 14px\">$l_price</span>");
+  echo " </tr>\n";
+  $today = date("Y-m-d", strtotime("Today"));
+  $sr = "select * from RESERVATIONS where res_status='1' and res_date='$today' order by res_id;";
+  $qr = db_query($sr);
+  if ($qr->num_rows > 0) {
+    while ($pr = $qr->fetch_object()) {
+      echo " <tr>\n";
+      echo "  <td><span style=\"font-size: 14px\">$pr->res_name</span></td>\n";
+      echo "  <td><span style=\"font-size: 14px\">$pr->res_email</span></td>\n";
+      $s_p = "select * from PRODUCTS where prod_id='$pr->prod_id' limit 1;";
+      $q_p = db_query($s_p);
+      $p_p = $q_p->fetch_object();
+      echo "  <td><span style=\"font-size: 14px\">$p_p->prod_name</span></td>\n";
+      $s_pr = "select * from PRICES where price_status='1' and prod_id='$pr->prod_id' order by price_createddate limit 1;";
+      $q_pr = db_query($s_pr);
+      $p_pr = $q_pr->fetch_object();
+      echo "  <td><span style=\"font-size: 14px\">$l_currency ".number_format($p_pr->price_price,2)."</span></td>\n";
+      echo " </tr>\n";
+    }
+    echo "</table>\n";
+    echo "$l_summary:<br />\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    echo " <tr>\n";
+    table_header("<span style=\"font-size: 14px\">$l_product</span>");
+    table_header("<span style=\"font-size: 14px\">$l_price</span>");
+    table_header("<span style=\"font-size: 14px\">$l_quantity</span>");
+    echo " </tr>\n";
+    $s_r  = "select p.prod_id, prod_name, count(*) as quantity from RESERVATIONS r, PRODUCTS p ";
+    $s_r .= "where r.prod_id=p.prod_id and res_status='1' and res_date='$today' ";
+    $s_r .= "group by p.prod_id order by prod_name;";
+    $q_r = db_query($s_r);
+    while ($p_r = $q_r->fetch_object()) {
+      echo " <tr>\n";
+      echo "  <td><span style=\"font-size: 14px\">$p_r->prod_name</span></td>\n";
+      $s_pr = "select * from PRICES where price_status='1' and prod_id='$p_r->prod_id' order by price_createddate limit 1;";
+      $q_pr = db_query($s_pr);
+      $p_pr = $q_pr->fetch_object();
+      echo "  <td><span style=\"font-size: 14px\">$l_currency ".number_format($p_pr->price_price,2)."</span></td>\n";
+      echo "  <td><span style=\"font-size: 14px\">$p_r->quantity</span></td>\n";
+      echo " </tr>\n";
+    }
+    echo "</table>\n";
+  } else {
+    echo " <tr>\n";
+    echo "  <td><span style=\"font-size: 14px\">$l_dmreservationno</span></td>\n";
+    echo " </tr>\n";
+  }
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-8\">\n";
+  echo "    <div class=\"panel panel-primary\">\n";
+  echo "      <div class=\"panel-heading\"><strong>$l_important:</strong></div>\n";
+  echo "      <div class=\"panel-body\">\n";
+  echo "       $l_reminderreservations\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  text_close();
+?>

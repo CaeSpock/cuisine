@@ -1,0 +1,11 @@
+<script language=javascript>
+  document.onkeydown=function(e) {
+    var event = window.event || e;
+    if (event.keyCode == 116 || (event.ctrlKey && event.keyCode == 82) || (window.event.ctrlKey && event.keyCode == 82) || event.keyCode == 46 ) {
+        event.keyCode = 0;
+        event.which = 0;
+        alert("Accion no permitida");
+        return false;
+    }
+  }
+</script>

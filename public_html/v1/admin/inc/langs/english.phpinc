@@ -1,0 +1,378 @@
+<?php
+  // Language: English
+
+  $l_adddb = "Adding to the database";
+  $l_address = "Address";
+  $l_administration = "Administration";
+  $l_admusers = "Adm users";
+  $l_admusers2 = "Administrate users";
+  $l_admcats = "Adm categories";
+  $l_admcats2 = "Administrate categories";
+  $l_admpphotos = "Admin product photos";
+  $l_admcphotos = "Admin categorie photos";
+  $l_admdailymenu = "Admin Daily Menu";
+  $l_admdailymenu2 = "Administrate Daily Menu";
+  $l_admprods = "Adm products";
+  $l_admprods2 = "Administrate products";
+  $l_amount = "Amount";
+  $l_at = "at";
+
+  $l_basicoptions = "Basic Options";
+
+  $l_cashier = "Cashier";
+  $l_catactives = "Active categories:";
+  $l_catadd = "Add a new categorie";
+  $l_cataddverify = "Please verify that there is no categorie created already in the system.<br />The addition is inmediate, and without verification.";
+  $l_catadddoit = "Add categorie";
+  $l_catchoose = "Please choose a categorie:";
+  $l_catdelete = "Delete categorie";
+  $l_catdeleteconfirm = "Please confirm that you wish to delete this categorie";
+  $l_catdeletecant = "Sorry, you can't delete a categorie that still has products on it.";
+  $l_catdescription = "Categorie description";
+  $l_categorie = "Categorie";
+  $l_categorieshort = "Cat";
+  $l_catnew = "New categorie";
+  $l_catproducts = "Categorie products";
+  $l_catupdate = "Update categorie";
+  $l_catupdate2 = "Update the following categorie";
+  $l_changelog = "Change Log";
+  $l_changepass = "Change<br>pass";
+  $l_choose = "Choose";
+  $l_city = "City";
+  $l_code = "Code";
+  $l_connectedfrom = "Connected from";
+  $l_confirm = "Yes, I confirm!";
+  $l_confirmnewpassword = "Confirm the new password";
+
+  $l_contactus = "Contact us";
+  $l_contactuswrite = "Please write a message";
+  $l_contactusconfirm = "Please confirm you want to send the following message";
+  $l_contactussending = "Sending ....";
+  $l_contactusemailbef = "Hello".PHP_EOL.PHP_EOL."You have received the following message:";
+  $l_contasctussubject = "Contact us interface";
+  $l_createdby = "Created by";
+  $l_createdon = "Created on";
+  $l_createuser = "User creation";
+  $l_createloginsameemail = "Same as E-Mail";
+  $l_createloginsamephone = "Same as phone number";
+  $l_createloginother = "Other";
+  $l_createdata = "Please provide the following information:";
+  $l_createuser = "Create user";
+  $l_createnewuser = "Create new user";
+  $l_createuserreminder = "Please notify the user about the following information:";
+  $l_currentpassword = "Current password";
+  $l_currentpphotos = "Current product photos:";
+  $l_currency = "Bs.";
+
+  $l_dashboard = "Dashboard";
+  $l_dbexistbefore = "The";
+  $l_dbexistafter = "field is not valid";
+  $l_dbexist2before = "The";
+  $l_dbexist2after = "field already exists in the database";
+  $l_dmfordate = "Daily menu for date";
+  $l_dmadd = "to add a daily menu";
+  $l_dmaddition = "Daily Menu Addition";
+  $l_dmdeletion = "Daily Menu Deletion";
+  $l_dmcreate = "Create Daily Menu";
+  $l_dmcreateconf = "Please confirm the following addition:";
+  $l_dmdelconfirm = "Please confirm you want to delete the following daily menu:";
+  $l_dmdeleting = "Deleting the following daily menu:";
+  $l_dmupdate = "Please update the following menu:";
+  $l_dmnomenu = "No menu is set for this date";
+  $l_dmdoreservation = "to make a reservation.";
+  $l_dmreservations = "Reservations";
+  $l_dmreservationstext = "Please select the desired dishes from our menu:";
+  $l_dmaddreserve = "Add reservation";
+  $l_dmconfirmreserve = "Confirm reservation";
+  $l_dmdeletereserve = "Delete reservation";
+  $l_dmreservationwaitemail = "An E-Mail has been sent to your address. This email contains a code and a link that you will use to confirm this reservation. You need to confirm the reservation.";
+  $l_dmreservationconfirm = "Please confirm the following reservation:";
+  $l_dmreservationemailbefore = "Hello %name%\n\nThis E-Mail is to confirm you have made a reservation for the following products:\n";
+
+  $l_dmreservationemailafter = "To confirm it please use the following link:\n";
+  $l_dmreservationemailfooter = "Thank you\n\nLa Cuisine\n";
+  $l_dmreservationemailsubject = "Reservation";
+  $l_dmreservationthankyou = "Thank you, the following reservation is now confirmed:";
+  $l_dmreservationconfirmedbefore = "Hello %name%\n\nThis E-Mail is to confirm the following reservation is in the system:\n";
+  $l_dmreservationconfirmedafter = "Thank you\n\nLa Cuisine\n"; 
+  $l_dmreservationofftime = "Sorry, you can NOT confirm a reservation at this time.<br />The daily confirmation time is over.";
+  $l_dmreservationactions = "The following actions are available for your reservation:";
+  $l_dmreservationdelete = "to delete your reservation.";
+  $l_dmreservationdeleted = "The following reservation has been deleted:";
+  $l_dmreservationdeletedbefore = "The following reservation has been deleted:";
+  $l_dmreservationdeletedafter = "You can add a new reservation if needed.";
+  $l_dmreservationconfirmdelete = "Please confirm you want to delete the following reservation:";
+  $l_dmreservationconfirmemail = "An E-Mail has been sent to your address. This email contains a code and a link that you will use to confirm this reservation removal. You need to confirm the removal.";
+  $l_dmreservationdeleteactives = "to delete active reservations for this E-Mail.";
+  $l_dmreservationdeletebefore = "Hello %name%\n\nThis E-Mail is to confirm you want to cancel the reservation made for the following products:\n";
+  $l_dmreservationdeleteafter = "To confirm the removal of this reservation please use the following link:\n";
+  $l_dmreservationno = "No active reservations for this date.";
+  $l_dmreservationactive = "Active reservations for today";
+  $l_dmtoday = "Today's daily menu:";
+  $l_dmupdateconf = "Please confirm the following update:";
+  $l_date = "Date";
+  $l_datetime = "Date Time";
+  $l_department = "Departament";
+  $l_delete = "Delete";
+  $l_deleteshort = "Del";
+  $l_dob = "Date of birth";
+  $l_documentation = "Documentation";
+
+  $l_email = "E-Mail";
+  $l_errorbefore = "The";
+  $l_errorafter = "field can't be null.";
+  $l_error2before = "The";
+  $l_error2after = "fields are not the same.";
+  $l_erroremailbefore = "The address";
+  $l_erroremailafter = "is not a valid E-Mail.";
+  $l_errordatebefore = "The";
+  $l_errordateafter = "is not a valid date.";
+  $l_errornumericbefore = "The";
+  $l_errornumericafter = "field must be numeric.";
+  $l_errorrangebefore = "The";
+  $l_errorrangeafter = "is not in the permiited range.";
+  $l_errorsfound = "I found the following errors";
+  $l_errorimage1 = "Unable to determine image type of uploaded file.";
+  $l_errorimage2 = "Not a gif/jpeg/png.";
+  $l_errorimage3 = "I wasnt able to upload the file!";
+
+  $l_filename = "File name";
+  $l_filetype = "File type";
+  $l_filesize = "File size";
+
+  $l_goback = "Back";
+
+  $l_id = "ID";
+  $l_idc = "ID Card";
+  $l_important = "Important";
+  $l_ip = "IP Address";
+
+  $l_kitchen = "Kitchen";
+
+  $l_level = "Level";
+  $l_location = "Location";
+  $l_login = "Login";
+  $l_logout = "LogOut";
+  $l_login_ok = "Currently logged in the system";
+  $l_login_nook = "Currently not logged in the system";
+  $l_logindate = "Login Date";
+  $l_loginfrom = "Logged in from";
+  $l_loginusing = "Logged in using";
+  $l_loginexpires = "Login expires";
+  $l_loginlastdate = "Last login date";
+  $l_loginnotyet = "Not yet logged";
+
+  $l_menu = "Menu";
+  $l_menumain = "Main Page";
+  $l_menudm = "Daily Menu";
+  $l_menucontact = "Contact us";
+  $l_message = "Message";
+  $l_modifyuser = "Modify user";
+  $l_modifydata = "Modify<br>Data";
+  $l_modifiedby = "Modified by";
+  $l_modifiedon = "Modified on";
+
+  $l_name = "Name";
+  $l_newpassword = "New Password";
+  $l_no = "No";
+  $l_note = "Note";
+  $l_nullcat = "categorie name";
+  $l_nulllevel = "level";
+  $l_nullemail = "E-Mail address";
+  $l_nullphone = "Phone number";
+  $l_nulld_dob = "day of birth";
+  $l_nullm_dob = "month of birth";
+  $l_nully_dob = "year of birth";
+  $l_nullpassword = "Password";
+  $l_nullnewpassword = "New Password";
+  $l_nullnewpassword2 = "Confirmation of the New Password";
+  $l_nullidc = "ID Card";
+  $l_nulladd = "Address";
+  $l_nullcity = "City";
+  $l_nulldept = "Department";
+  $l_nullusername = "username";
+  $l_nullselprods = "selected products";
+
+  $l_options = "Options";
+
+  $l_password = "password";
+  $l_pay = "Pay";
+  $l_phonenumber = "Phone Number";
+  $l_pleaseconfirm = "Please confirm the following information:";
+  $l_pleaselogin = "Login into the system";
+  $l_photo = "Photo";
+  $l_photoshort = "Pht";
+  $l_photopadd = "Add new product photo";
+  $l_photocadd = "Add new categorie photo";
+  $l_photoadd = "Add photo";
+  $l_photodel = "Delete photo";
+  $l_photoupd = "Update photo";
+  $l_photodelconfirm = "Please confirm you want to delete the following picture:";
+  $l_photoreceived = "Photo received";
+  $l_photodesc = "Photo description";
+  $l_presshere = "Press here";
+  $l_price = "Price";
+  $l_prodchoose = "Please choose a product:";
+  $l_product = "Product";
+  $l_products = "Products";
+  $l_productinfo = "Product info";
+  $l_productdesc = "Description";
+  $l_prodactive = "Active products:";
+  $l_prodadd = "Add a new product:";
+  $l_proddel = "Please confirm you want to delete the following product:";
+  $l_proddel2 = "Delete product";
+  $l_prodnew = "New product";
+  $l_prodadddoit = "Add product";
+  $l_prodname = "Product name";
+  $l_prodcat = "Product categorie";
+  $l_produpd = "Update product";
+  $l_prodadded = "Product added";
+  $l_prodadded2 = "Product successfully added to the shopping cart.";
+
+  $l_qualitypass = "Quality of password";
+  $l_quantity = "Quantity";
+
+  $l_reminderdateformat = "(Date format is YYYY-MM-DD)";
+  $l_reminderwildcard = "You can use % as a wildcard";
+  $l_reminderpassword = "Passwords are case sensitive.";
+  $l_reminderpassword2 = "User should update his password once in the system";
+  $l_reminderinmediateadd = "(Addition is inmediate)";
+  $l_reminderinmediateupdate = "(Update is inmediate)";
+  $l_remindershowpassword = "Password will be shown. User should login and update his password.";
+  $l_reminderpasswordgenerate = "If password is in blank, the system will generate a random password for the user.";
+  $l_reminderusername = "Username can't have spaces and will always be in lowercase.";
+  $l_reminderphoto = "Photos should be no longer than 900k and are showed in a 200x200 size in the grid.";
+  $l_reminderreservations = "Reservations are received only on the same day, from $dmtime_start to $dmtime_end.";
+  $l_repeatedpassword = "current password";
+  $l_repeatedcat = "categorie name";
+  $l_reports = "Reports";
+  $l_reportbyprod = "Products Report";
+  $l_reportbycat = "Categorie Report";
+  $l_reportbydate = "Date Report";
+  $l_reportdaterange = "Date Range";
+  $l_reportgenerate = "Generate Report";
+  $l_reportquantity = "Quantity";
+  $l_summary = "Summary";
+  $l_reset = "Reset";
+  $l_restart = "Restart";
+  $l_restricted = "I'm sorry but the access to this feature is restricted.<br />No direct access is permitted.<br/>You can only access this feature from other feature.<br />";
+
+  $l_sales = "Sales";
+  $l_saleproducts = "Sale Products";
+  $l_saleadd = "Add Sale";
+  $l_search = "Search";
+  $l_searchfor = "Search for";
+  $l_searchin = "in";
+  $l_selectuser = "Select user to process";
+  $l_send = "Send";
+  $l_server = "Server";
+  $l_showdata = "Show Data";
+  $l_shoppingcart = "Shopping cart";
+  $l_scconfirm = "Please confirm the following shopping cart:";
+  $l_scconfirmed = "Generating the following sale:";
+  $l_scnoname = "No name";
+  $l_scnoidc = "0";
+  $l_scempty = "Shopping cart is EMPTY.";
+  $l_status = "Status";
+  $l_statusby = "Status by";
+  $l_statuson = "Status on";
+
+  $l_tocontinue = "to continue";
+  $l_today = "Today";
+
+  $l_unmatchpasswords = "password";
+  $l_update = "Update";
+  $l_updateshort = "Upd";
+  $l_updatedata = "Update your information";
+  $l_updatedata2 = "Please update the following information:";
+  $l_updating = "Updating information ....";
+  $l_updatingok = "Updating database";
+  $l_updateok = "Update successfull";
+  $l_updatepass = "Update your password";
+  $l_updatepassusers = "Update user password";
+  $l_updatingpass = "Updating password ...";
+  $l_updusers = "Update user data";
+  $l_updatingusers = "Updating user data ...";
+  $l_updfollowinginfo = "Please update the following information:";
+  $l_uploading = "Uploading file";
+  $l_uploadok = "Upload successfull";
+  $l_uploadnook = "I wasn't able to upload the file!";
+  $l_user = "User";
+  $l_userdata = "User information";
+  $l_users = "Users";
+  $l_username = "Username";
+
+  $l_view = "View";
+  $l_viewshort = "View";
+  $l_viewreservations = "View Reservations";
+  $l_viewdailymenu = "View Daily Menu";
+
+  $l_tocreateusers = "to create a new user.";
+
+  $l_verifying = "Verifying variables";
+
+  $l_whatis = "What is 'La Cuisine'?";
+  $l_welcome = "Welcome";
+
+  // Aditional stuff
+  $phpFileUploadErrors = array(
+    0 => 'There is no error, the file uploaded with success',
+    1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+    2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+    3 => 'The uploaded file was only partially uploaded',
+    4 => 'No file was uploaded',
+    6 => 'Missing a temporary folder',
+    7 => 'Failed to write file to disk.',
+    8 => 'A PHP extension stopped the file upload.',
+  );
+
+  // Months
+  $l_m01 = "January";
+  $l_m02 = "February";
+  $l_m03 = "March";
+  $l_m04 = "April";
+  $l_m05 = "May";
+  $l_m06 = "June";
+  $l_m07 = "July";
+  $l_m08 = "August";
+  $l_m09 = "September";
+  $l_m10 = "October";
+  $l_m11 = "November";
+  $l_m12 = "December";
+
+  // Short months
+  $l_sm01 = "Jan";
+  $l_sm02 = "Feb";
+  $l_sm03 = "Mar";
+  $l_sm04 = "Apr";
+  $l_sm05 = "May";
+  $l_sm06 = "Jun";
+  $l_sm07 = "Jul";
+  $l_sm08 = "Aug";
+  $l_sm09 = "Sep";
+  $l_sm10 = "Oct";
+  $l_sm11 = "Nov";
+  $l_sm12 = "Dec";
+
+  // Separators
+  $l_procdate_sep = "/";
+  $l_procdate2_sep = "-";
+  $l_procdate3_sep = "/";
+
+  // Days of week
+  $l_dow0 = "Sunday";
+  $l_dow1 = "Monday";
+  $l_dow2 = "Tuesday";
+  $l_dow3 = "Wednesday";
+  $l_dow4 = "Thursday";
+  $l_dow5 = "Friday";
+  $l_dow6 = "Saturday";
+
+  $l_sdow0 = "Su";
+  $l_sdow1 = "Mo";
+  $l_sdow2 = "Tu";
+  $l_sdow3 = "We";
+  $l_sdow4 = "Th";
+  $l_sdow5 = "Fr";
+  $l_sdow6 = "Sa";
+?>

@@ -1,0 +1,7 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# InfoLaCuisine #WebHash# $skcv_hash");
+  text_open("&iquest;Qu&eacute; es KAPPA?", "");
+  echo "<strong>KAPPA</strong> es el sistema contable computarizada de Base SA. Fue creado y dise&ntilde;ado por el Departamento de Tecnolog&iacute;a de la Informaci&oacute;n a la cabeza de Carlos An&iacute;barro, en base a las necesidades de la empresa detalladas por la Jefe de Contabilidad Mar&iacute;a Ticona.<br />\n";
+  echo "Versi&oacute;n actual: $site_ver<br />\n";
+  text_close();
+?>

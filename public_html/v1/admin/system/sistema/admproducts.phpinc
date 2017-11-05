@@ -1,0 +1,486 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# AdmProducts #WebHash# $skcv_hash");
+  text_open($l_admprods2);
+  // Recepcion de Variables
+  $in_sent = receive_variable("POST", "in_sent");
+  $in_search = receive_variable("POST", "in_search");
+  $in_searchfor = receive_variable("POST", "in_searchfor");
+  $in_searchin = receive_variable("POST", "in_searchin");
+  $pageNumber = receive_variable("POST", "pageNumber");
+
+  $in_doverify = receive_variable("POST", "in_doverify");
+  $in_doconfirm = receive_variable("POST", "in_doconfirm");
+  $in_product = receive_variable("POST", "in_product");
+  $in_productname = receive_variable("POST", "in_productname");
+  $in_productdesc = receive_variable("POST", "in_productdesc");
+  $in_catforproduct = receive_variable("POST", "in_catforproduct");
+  $in_price = receive_variable("POST", "in_price");
+  $in_priceoriginal = receive_variable("POST", "in_priceoriginal");
+  $in_add = receive_variable("POST", "in_add");
+  $in_upd = receive_variable("POST", "in_upd");
+  $in_del = receive_variable("POST", "in_del");
+  $in_view = receive_variable("POST", "in_view");
+  $doit = receive_variable("POST", "doit");
+
+  if ($in_sent == 1) {
+    if ($in_view == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-8\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      // echo "      <div class=\"panel-heading\"><strong>You can add a title here</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+      $st = "select * from PRODUCTS p where prod_id='$in_product' and prod_status='1' limit 1;";
+      $gt = db_query($st);
+      $dt = $gt->fetch_object();
+      table_row("fa fa-list-ol", "$l_name:", "", "none", "$dt->prod_name");
+      table_row("fa fa-font", "$l_productdesc:", "", "none", "$dt->prod_desc");
+      $textcategorie = "";
+      $s_cat = "select * from CATEGORIES where cat_id='$dt->cat_id' limit 1;";
+      $q_cat = db_query($s_cat);
+      $p_cat = $q_cat->fetch_object();
+      $textcategorie .= $p_cat->cat_name;
+      table_row("fa fa-list-ol", "$l_categorie:", "", "none", "$textcategorie");
+      $textprice = $l_currency." ";
+      $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+      $q_price = db_query($s_price);
+      $p_price = $q_price->fetch_object();
+      $textprice .= number_format($p_price->price_price,2);
+      table_row("fa fa-map-pin", "$l_price:", "", "textarea", "$textprice");
+      echo "</table>\n";
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    } elseif ($in_del == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-8\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      // echo "      <div class=\"panel-heading\"><strong>You can add your title here</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      if ($doit == 1) {
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        $ut = "update PRODUCTS set prod_status='0', prod_moddate='$date $time', ";
+        $ut .= "prod_modbyid='$skcv_user_id', prod_modbyname='$skcv_user_name', ";
+        $ut .= "prod_modip='$user_ip' where prod_id='$in_product' and prod_status='1';";
+        $qi = db_query($ut);
+        if ($dblink->error == null) {
+          $upd_result = $label_ok;
+        } else {
+          $upd_result = $label_nook;
+        }
+        // Now lets disable photos
+        $ut = "update PHOTOS set photo_status='0', photo_moddate='$date $time', ";
+        $ut .= "photo_modbyid='$skcv_user_id', photo_modbyname='$skcv_user_name', ";
+        $ut .= "photo_modip='$user_ip' where photo_prodcat='$in_product' ";
+        $ut .= "and photo_cat='2' and photo_status='1';";
+        $qi = db_query($ut);
+        if ($dblink->error == null) {
+          $upd_result .= $label_ok;
+        } else {
+          $upd_result .= $label_nook;
+        }
+        // Now lets disable prices
+        $up  = "update PRICES set price_status='0', price_desc='$l_proddel2 $in_product', ";
+        $up .= "price_moddate='$date $time', ";
+        $up .= "price_modbyid='$skcv_user_id', price_modbyname='$skcv_user_name', ";
+        $up .= "price_modip='$user_ip' where prod_id='$in_product' and price_status='1';";
+        $di = db_query($up);
+        if ($dblink->error == null) {
+          $upd_result .= $label_ok;
+        } else {
+          $upd_result .= $label_nook;
+        }
+        table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$upd_result");
+        opslog("#UserID# $skcv_user #Action# AdmProducts #WebHash# $skcv_hash #Result# $l_proddel2 ID: $in_product");
+        echo "</table>\n";
+      } else {
+        echo "$l_proddel:<br />\n";
+        echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        $st = "select * from PRODUCTS where prod_id='$in_product' and prod_status='1' limit 1;";
+        $gt = db_query($st);
+        $dt = $gt->fetch_object();
+        table_row("fa fa-font", "$l_name:", "", "none", "$dt->prod_name");
+        table_row("fa fa-map-marker", "$l_productdesc:", "", "none", "$dt->prod_desc");
+        $textcategorie = "";
+        $s_cat = "select * from CATEGORIES where cat_id='$dt->cat_id' limit 1;";
+        $q_cat = db_query($s_cat);
+        $p_cat = $q_cat->fetch_object();
+        $textcategorie = $p_cat->cat_name;
+        table_row("fa fa-map-pin", "$l_prodcat:", "", "none", "$textcategorie");
+        $textprice = $l_currency." ";
+        $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+        $q_price = db_query($s_price);
+        $p_price = $q_price->fetch_object();
+        $textprice .= number_format($p_price->price_price,2);
+        table_row("fa fa-money", "$l_price:", "", "none", "$textprice");
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+        echo "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"doit\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+      }
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    } elseif ($in_upd == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      // echo "      <div class=\"panel-heading\"><strong>You can add a title here</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      if ($doit == 1) {
+        $error = 0;
+        $errortext = "";
+        $errorgraph = "";
+        $in_productname = trim($in_productname);
+        eval_null("$in_productname", $l_prodname);
+        eval_null("$in_catforproduct", $l_prodcat);
+        eval_null("$in_price", $l_price);
+        eval_zero("$in_price", $l_price);
+        eval_repdb("$in_productname", "PRODUCTS", "prod_name", "and prod_status='1' and cat_id='$in_catforproduct' and prod_id<>'$in_product'", $l_prodname);
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+        }
+        echo "</table>\n";
+        if ($error != 1) {
+          $ut  = "update PRODUCTS set prod_name='$in_productname', cat_id='$in_catforproduct', ";
+          $ut .= "prod_desc='$in_productdesc', prod_moddate='$date $time', ";
+          $ut .= "prod_modbyid='$skcv_user_id', prod_modbyname='$skcv_user_name', ";
+          $ut .= "prod_modip='$user_ip' where prod_id='$in_product' and prod_status='1' limit 1;";
+          $qi = db_query($ut);
+          if ($dblink->error == null) {
+            $upd_result = $label_ok;
+          } else {
+            $upd_result = $label_nook;
+            $tipoid = 0;
+          }
+          if ($in_price != $in_priceoriginal) {
+            $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+            $q_price = db_query($s_price);
+            $p_price = $q_price->fetch_object();
+            $p_pid = $p_price->price_id;
+            // Desactivar precios
+            if ($p_pid != "") {
+              $up  = "update PRICES set price_status='0', price_moddate='$date $time', ";
+              $up .= "price_modbyid='$skcv_user_id', price_modbyname='$skcv_user_name', ";
+              $up .= "price_modip='$user_ip' where price_id='$p_pid' limit 1;";
+              $do = db_query($up);
+              if ($dblink->error == null) {
+                $upd_result .= $label_ok;
+              } else {
+                $upd_result .= $label_nook;
+              }
+            }
+            // Adicionar nuevo precio
+            $inp  = "insert into PRICES (price_price, price_desc, price_status, prod_id, ";
+            $inp .= "price_createddate, price_createdbyid, price_createdbyname, ";
+            $inp .= "price_createdip) values(";
+            $inp .= "'$in_price', '$in_productname', '1', '$in_product', '$date $time', ";
+            $inp .= "'$skcv_user_id', '$skcv_user_name', '$user_ip');";
+            $doinp = db_query($inp);
+            if ($dblink->error == null) {
+              $upd_result .= $label_ok;
+            } else {
+              $upd_result .= $label_nook;
+            }
+          }
+          echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+          table_row("fa fa-building", "$l_name:", "", "none", "$in_productname");
+          table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$upd_result");
+          echo "</table>\n";
+          opslog("#UserID# $skcv_user #Action# AdmProducts #WebHash# $skcv_hash #Result# $l_produpd ID: $in_product $l_name: $in_productname - $l_price $l_currency $in_price");
+        }
+      } else {
+        echo "$l_updfollowinginfo:<br />\n";
+        echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n"; 
+        $st = "select * from PRODUCTS where prod_id='$in_product' limit 1;";
+        $gt = db_query($st);
+        $dt = $gt->fetch_object();
+        table_row("fa fa-font", "$l_prodname:", "in_productname", "text", "$dt->prod_name", "$l_prodname");
+        table_row("fa fa-list-ol", "$l_productdesc:", "in_productdesc", "textarea", "$dt->prod_desc", "$l_productdesc");
+        $text_categorie  = "<select name=\"in_catforproduct\">\n";
+        $s_cat = "select * from CATEGORIES where cat_status='1' order by cat_name;";
+        $q_cat = db_query($s_cat);
+        while ($p_cat = $q_cat->fetch_object()) {
+          if ($p_cat->cat_id == $dt->cat_id) {
+            $text_categorie .= "  <option value=\"$p_cat->cat_id\" selected>$p_cat->cat_name</option>\n";
+          } else {
+            $text_categorie .= "  <option value=\"$p_cat->cat_id\">$p_cat->cat_name</option>\n";
+          }
+        } 
+        $text_categorie .= "</select>\n";
+        table_row("fa fa-map-pin", "$l_categorie:", "", "none", "$text_categorie", "");
+        $textprice = "";
+        $s_price = "select * from PRICES where prod_id='$in_product' and price_status='1' order by price_createddate;";
+        $q_price = db_query($s_price);
+        $p_price = $q_price->fetch_object();
+        $textprice .= number_format($p_price->price_price,2);
+        table_row("fa fa-money", "$l_price ($l_currency):", "in_price", "text", "$textprice", "$l_price");
+        echo "<input name=\"in_priceoriginal\" value=\"$textprice\" type=\"hidden\">\n";
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_product\" value=\"$in_product\" type=\"hidden\">\n";
+        echo "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"doit\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+      }
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    } elseif ($in_add == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      // echo "      <div class=\"panel-heading\"><strong>you can add a title here</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      $error = 0;
+      $errortext = "";
+      $errorgraph = "";
+      $in_productname = trim($in_productname);
+      eval_null("$in_productname", $l_prodname);
+      eval_null("$in_productdesc", $l_productdesc);
+      eval_null("$in_catforproduct", $l_prodcat);
+      eval_null("$in_price", $l_price);
+      eval_zero("$in_price", $l_price);
+      eval_repdb("$in_productname", "PRODUCTS", "prod_name", "and prod_status='1' and cat_id='$in_catforproduct'", $l_prodname);
+      echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+      table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+      if ($error == 1) {
+        table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+        echo "<tr><td colspan=\"2\">\n";
+        go_back();
+        echo "</td></tr>\n";
+      }
+      echo "</table>\n";
+      if ($error != 1) {
+        $it  = "insert into PRODUCTS (prod_name, prod_desc, cat_id, ";
+        $it .= "prod_status, prod_createddate, prod_createdbyid, ";
+        $it .= "prod_createdbyname, prod_createdip) values (";
+        $it .= "'$in_productname', '$in_productdesc', '$in_catforproduct', ";
+        $it .= "'1', '$date $time', '$skcv_user_id', '$skcv_user_name', '$user_ip');";
+        $qi = db_query($it);
+        if ($dblink->error == null) {
+          $upd_result = $label_ok;
+          $productid = $dblink->insert_id;
+        } else {
+          $upd_result = $label_nook;
+          $productid = 0;
+        }
+        $ip  = "insert into PRICES (prod_id, price_price, price_desc, ";
+        $ip .= "price_status, price_createddate, price_createdbyid, ";
+        $ip .= "price_createdbyname, price_createdip) values (";
+        $ip .= "'$productid', '$in_price', '$in_productname', ";
+        $ip .= "'1', '$date $time', '$skcv_user_id', '$skcv_user_name', '$user_ip');";
+        $qi = db_query($ip);
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-building", "$l_prodnew:", "", "none", "$in_productname - $in_productdesc");
+        $textcategorie = "";
+        $s_cat = "select * from CATEGORIES where cat_id='$in_catforproduct' limit 1;";
+        $q_cat = db_query($s_cat);
+        $p_cat = $q_cat->fetch_object();
+        $textcategorie = $p_cat->cat_name;
+        table_row("fa fa-building", "$l_categorie:", "", "none", "$textcategorie [$in_catforproduct]");
+        table_row("fa fa-money", "$l_price:", "", "none", "$l_currency ".number_format($in_price,2));
+        table_row("fa fa-tasks", "$l_adddb:", "", "none", "$upd_result");
+        echo "</table>\n";
+        opslog("#UserID# $skcv_user #Action# AdmProducts #WebHash# $skcv_hash #Result# $l_prodadd ID: $productid $l_name: $in_productname - $l_categorie: $in_catforproduct - $l_description: $in_productdesc");
+      }
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    }
+  } else {
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_search</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    echo "$l_searchfor: <input type=\"text\" value=\"$in_searchfor\" name=\"in_searchfor\"> $l_searchin ";
+    echo "<select name=\"in_searchin\">\n";
+    echo " <option value=\"\">--</option>\n";
+    if ($in_searchin == "prod_name") { echo " <option value=\"prod_name\" selected>$l_prodname</option>\n"; }
+    else { echo " <option value=\"prod_name\">$l_prodname</option>\n"; }
+    if ($in_searchin == "prod_desc") { echo " <option value=\"prod_desc\" selected>$l_productdesc</option>\n"; }
+    else { echo " <option value=\"prod_desc\">$l_productdesc</option>\n"; }
+    echo "</select>\n";
+    echo "<input name=\"in_search\" value=\"1\" type=\"hidden\">\n";
+    echo "<button type=\"submit\" class=\"btn btn-success\"><i class=\"fa fa-search\"></i> $l_search</button>";
+    echo "</form>\n";
+    echo "<strong>$l_note:</strong> $l_reminderwildcard";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-10\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_prodactive</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    $sc  = "select * from PRODUCTS p, CATEGORIES c where p.cat_id=c.cat_id and prod_status='1' ";
+    if ($in_search == 1) {
+      if ($in_searchin != "") {
+        $sc .= "and $in_searchin like '$in_searchfor' ";
+      }
+    }
+    $sc .= "order by cat_name, prod_id asc;";
+    $p_c = db_query($sc);
+    $total = $p_c->num_rows;
+    if ($pageNumber == "") { $pageNumber = 1; }
+    $y = 1;
+    $num = 0;
+    echo "<table class=\"table-responsive table-condensed\">\n";
+    echo " <tr>\n";
+    echo "  <td>Resultados:</td>\n";
+    while ($total >= $y ) {
+      $num = ($y-1) + $perPage;
+      if ($num > $total ) {
+        $num = $total;
+      }
+      if ( $y == $pageNumber ) {
+        if ($y == $num) {
+          echo "<td>[$y]</td>\n";
+        } else {
+          echo "<td>[$y-$num]</td>\n";
+        }
+      } else {
+        if ($in_search == 1) {
+          echo "<td>";
+          echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<input name=\"pageNumber\" value=\"$y\" type=\"hidden\">\n";
+          echo "<input name=\"in_search\" value=\"1\" type=\"hidden\">\n";
+          echo "<input name=\"in_searchin\" value=\"$in_searchin\" type=\"hidden\">\n";
+          echo "<input name=\"in_searchfor\" value=\"$in_searchfor\" type=\"hidden\">\n";
+          echo "<button type=\"submit\" class=\"btn btn-xs btn-success\">$y-$num</button>\n";
+          echo "</form>\n";
+          echo "</td>";
+        } else {
+          echo "<td>";
+          echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+          echo "<input name=\"pageNumber\" value=\"$y\" type=\"hidden\">\n";
+          echo "<button type=\"submit\" class=\"btn btn-xs btn-success\">$y-$num</button>\n";
+          echo "</form>\n";
+          echo "</td>";
+        }
+      }
+      $y = $y + $perPage;
+    }
+    echo " </tr>\n";
+    echo "</table>\n";
+    $origen = $pageNumber-1;
+    $sc  = "select * from PRODUCTS p, CATEGORIES c where p.cat_id=c.cat_id and prod_status='1' ";
+    if ($in_search == 1) {
+      if ($in_searchin != "") {
+        $sc .= "and $in_searchin like '$in_searchfor' ";
+      }
+    }
+    $sc .= "order by cat_name, prod_id asc limit $origen, $perPage;";
+    echo "      </div>\n";
+    echo "      <div class=\"panel-heading\">$l_prodactive</div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+    echo " <tr>\n";
+    table_header("<span style=\"font-size: 14px\">$l_categorieshort</span>");
+    table_header("<span style=\"font-size: 14px\">$l_name</span>");
+    table_header("<span style=\"font-size: 14px\">$l_price</span>");
+    table_header("<span style=\"font-size: 14px\">$l_photoshort</span>");
+    table_header("<span style=\"font-size: 14px\">$l_viewshort</span>");
+    table_header("<span style=\"font-size: 14px\">$l_updateshort</span>");
+    table_header("<span style=\"font-size: 14px\">$l_deleteshort</span>");
+    echo " </tr>\n";
+    $gc = db_query($sc);
+    while ($dc = $gc->fetch_object()) {
+      echo " <tr>\n";
+      echo "  <td><span style=\"font-size: 14px\">$dc->cat_name</span></td>\n";
+      echo "  <td><span style=\"font-size: 14px\">$dc->prod_name</span></td>\n";
+      $showprice = $l_currency." ";
+      $s_p = "select * from PRICES where prod_id='$dc->prod_id' and price_status='1' order by price_createddate desc limit 1;";
+      $g_p = db_query($s_p);
+      $p_p = $g_p->fetch_object();
+      $showprice .= number_format($p_p->price_price,2);
+      echo "  <td align=\"right\"><span style=\"font-size: 14px\">$showprice</span></td>\n";
+      $verphoto  = "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."?action=admpphotos\">\n";
+      $verphoto .= "<input name=\"in_product\" value=\"$dc->prod_id\" type=\"hidden\">\n";
+      $verphoto .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $verphoto .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-photo\"></i></button>\n";
+      $verphoto .= "</form>\n";
+      echo "<td class=\"text-center\"><span style=\"font-size: 14px\">$verphoto</span></td>\n";
+      $vercat  = "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $vercat .= "<input name=\"in_product\" value=\"$dc->prod_id\" type=\"hidden\">\n";
+      $vercat .= "<input name=\"in_view\" value=\"1\" type=\"hidden\">\n";
+      $vercat .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $vercat .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-eye\"></i></button>\n";
+      $vercat .= "</form>\n";
+      echo "<td class=\"text-center\"><span style=\"font-size: 14px\">$vercat</span></td>\n";
+      $updcat  = "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $updcat .= "<input name=\"in_product\" value=\"$dc->prod_id\" type=\"hidden\">\n";
+      $updcat .= "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+      $updcat .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $updcat .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-pencil-square-o\"></i></button>\n";
+      $updcat .= "</form>\n";
+      echo "<td class=\"text-center\"><span style=\"font-size: 14px\">$updcat</span></td>\n";
+      $delcat  = "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $delcat .= "<input name=\"in_product\" value=\"$dc->prod_id\" type=\"hidden\">\n";
+      $delcat .= "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+      $delcat .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $delcat .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-times\"></i></button>\n";
+      $delcat .= "</form>\n";
+      echo "<td class=\"text-center\"><span style=\"font-size: 14px\">$delcat</span></td>\n";
+      echo " </tr>\n";
+    }
+    echo "</table>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-9\">\n";
+    echo "    <div class=\"panel panel-info\">\n";
+    echo "      <div class=\"panel-heading\">$l_prodadd</div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    echo "<table class=\"table table-responsive table-striped table-hover table-condensed table-bordered\">\n";
+    table_row("fa fa-font", "$l_name:", "in_productname", "text", "", "$l_name");
+    table_row("fa fa-list-ol", "$l_productdesc:", "in_productdesc", "textarea", "", "$l_productdesc");
+    $in_textcategorie  = "<select name=\"in_catforproduct\">\n";
+    $s_cat = "select * from CATEGORIES where cat_status='1' order by cat_name;";
+    $q_cat = db_query($s_cat);
+    while ($p_cat = $q_cat->fetch_object()) {
+      $in_textcategorie .= " <option value=\"$p_cat->cat_id\">$p_cat->cat_name</option>\n";
+    }
+    $in_textcategorie .= "</select>\n"; 
+    table_row("fa fa-list-ol", "$l_categorie:", "", "none", "$in_textcategorie");
+    table_row("fa fa-money", "$l_price ($l_currency):", "in_price", "text", "", "$l_price");
+    echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+    echo "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+    table_row("", "&nbsp;", "", "none", "$l_reminderinmediateadd");
+    echo "</table>\n";
+    $reset = "";
+    $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_prodadddoit</button>";
+    echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+    echo "</form>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

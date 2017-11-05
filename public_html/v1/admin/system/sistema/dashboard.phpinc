@@ -1,0 +1,134 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# Dashboard #WebHash# $skcv_hash");
+  text_open($l_welcome);
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body blue\">\n";
+  echo "        <h4>$l_server</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-server fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  echo "        ".$_SERVER['SERVER_NAME']."<br />\n";
+  if ($skcv_level_id >= 75) {
+    echo "        ".$_SERVER['SERVER_SOFTWARE']."<br />PHP version ". phpversion()."<br />mySQL ".$dblink->server_info."\n";
+  } else {
+    echo "        <br /> <br /> <br />\n";
+  }
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body yellow\">\n";
+  echo "        <h4>$l_datetime</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-calendar fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  echo "        ".proc_date($date)."<br /> $time\n";
+  echo "        <br /> <br /> <br />\n";
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body green\">\n";
+  echo "        <h4>$l_connectedfrom</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-connectdevelop fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  echo "        $user_host $user_ip<br />\n";
+  echo "        $user_client \n";
+  echo "         <br /> <br />";
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body red\">\n";
+  echo "        <h4>$l_user</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-user fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  echo "        $skcv_user_name<br />\n";
+  $s_level = "select * from USERLEVELS where level_id='$skcv_level_id' limit 1;";
+  $q_level = db_query($s_level);
+  $level = $q_level->fetch_object();
+  echo "        $level->level_name\n";
+  echo "        <br />";
+  if ($skcv_level_id >= 75) {
+    echo "<a href=\"$PHPSELF?action=changelog\">$l_changelog</a>";
+  }
+  echo "        <br />";
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  /**
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body gray\">\n";
+  echo "        <h4>Facturas Este Mes</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-th-list fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  $mes = date("Y-m");
+  $s_facts  = "select e.estado_texto, count(*) as cantidad from FACTURAS f, ESTADOS e ";
+  $s_facts .= "where f.estado_id=e.estado_id and f.user_id='$skcv_user_id' and ";
+  $s_facts .= "factura_fecha like '$mes-%' group by f.estado_id;";
+  $q_facts = db_query($s_facts);
+  if ($q_facts->num_rows>0) {
+    $facturas_mostrar = "";
+    while ($pf=$q_facts->fetch_object()) {
+      $facturas_mostrar .= number_format($pf->cantidad,0)." en estado $pf->estado_texto<br />\n";
+    }
+    echo "        $facturas_mostrar\n";
+    $contador = $q_facts->num_rows;
+    while ($contador < 3) {
+      echo "<br />";
+      $contador ++;
+    }
+  } else {
+    echo "        <br /> <br /> <br />";
+  }
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-md-4 \">\n";
+  echo "    <div class=\"panel panel-primary text-center no-boder\">\n";
+  echo "      <div class=\"panel-body violet\">\n";
+  echo "        <h4>Facturas Totales</h4> \n";
+  echo "        <hr />\n";
+  echo "        <i class=\"fa fa-th-list fa-4x\"></i>\n";
+  echo "        <p><span style=\"font-size: 14px\">\n";
+  $s_facts  = "select e.estado_texto, count(*) as cantidad from FACTURAS f, ESTADOS e ";
+  $s_facts .= "where f.estado_id=e.estado_id and f.user_id='$skcv_user_id' group by f.estado_id;";
+  $q_facts = db_query($s_facts);
+  if ($q_facts->num_rows>0) {
+    $facturas_mostrar = "";
+    while ($pf=$q_facts->fetch_object()) {
+      $facturas_mostrar .= number_format($pf->cantidad,0)." en estado $pf->estado_texto<br />\n";
+    }
+    echo "        $facturas_mostrar\n";
+    $contador = $q_facts->num_rows;
+    while ($contador < 3) {
+      echo "<br />";
+      $contador ++;
+    }
+  } else {
+    echo "        <br /> <br /> <br />";
+  }
+  echo "        </span></p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  */
+  echo "</div>\n";
+  text_close();
+?>

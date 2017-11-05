@@ -1,0 +1,36 @@
+<?php
+    if ($skcv_level_id >= 1) { // Usuarios
+      if ($action == "dashboard") { include_once("$pathsys/dashboard.phpinc"); }
+      if ($action == "infolacuisine") { include_once("$pathsys/infolacuisine.phpinc"); }
+      if ($action == "updatedata") { include_once("$pathsys/updatedata.phpinc"); }
+      if ($action == "updatepass") { include_once("$pathsys/updatepass.phpinc"); }
+      if ($action == "documents") { include_once("$pathsys/documents.phpinc"); }
+    }
+    if ($skcv_level_id >= 30) { // Kitchen
+      if ($action == "viewreservationsk") { include_once("$pathsys/viewreservations.phpinc"); }
+      if ($action == "viewdailymenu") { include_once("$pathsys/viewdailymenu.phpinc"); }
+    }
+    if ($skcv_level_id >= 40) { // Sales
+      if ($action == "viewreservations") { include_once("$pathsys/viewreservations.phpinc"); }
+      if ($action == "sales") { include_once("$pathsys/sales.phpinc"); }
+    }
+    if ($skcv_level_id >= 50) { // Reports
+      if ($action == "reportbyprod") { include_once("$pathsys/reportbyprod.phpinc"); }
+      if ($action == "reportbycat") { include_once("$pathsys/reportbycat.phpinc"); }
+      if ($action == "reportbydate") { include_once("$pathsys/reportbydate.phpinc"); }
+    }
+    if ($skcv_level_id >= 80) { // Products
+      if ($action == "admcats") { include_once("$pathsys/admcats.phpinc"); }
+      if ($action == "admcphotos") { include_once("$pathsys/admcphotos.phpinc"); }
+      if ($action == "admproducts") { include_once("$pathsys/admproducts.phpinc"); }
+      if ($action == "admdailymenu") { include_once("$pathsys/admdailymenu.phpinc"); }
+      if ($action == "admpphotos") { include_once("$pathsys/admpphotos.phpinc"); }
+    }
+    if ($skcv_level_id >= 80) { // Gerencias
+      if ($action == "admusers") { include_once("$pathsys/admusers.phpinc"); }
+      if ($action == "createuser") { include_once("$pathsys/createuser.phpinc"); }
+      if ($action == "updusers") { include_once("$pathsys/updusers.phpinc"); }
+      if ($action == "updatepassusers") { include_once("$pathsys/updatepassusers.phpinc"); }
+      if ($action == "changelog") { include_once("$pathsys/changelog.phpinc"); }
+    }
+?>

@@ -1,0 +1,181 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# UpdateData #WebHash# $skcv_hash");
+  text_open($l_updatedata);
+  // Recibir variables
+  $submit_form = receive_variable("POST", "submit_form");
+  $confirm_form = receive_variable("POST", "confirm_form");
+  $name_form = receive_variable("POST", "name_form");
+  $email_form = receive_variable("POST", "email_form");
+  $phonenumber_form = receive_variable("POST", "phonenumber_form");
+  $day_form = receive_variable("POST", "day_form");
+  $month_form = receive_variable("POST", "month_form");
+  $year_form = receive_variable("POST", "year_form");
+  $idc_form = receive_variable("POST", "idc_form");
+  $address_form = receive_variable("POST", "address_form");
+
+  if ($submit_form == 1) {
+    $error = 0;
+    $errortext = "";
+    $errorgraph = "";
+    eval_null("$email_form", $l_nullemail);
+    eval_null("$phonenumber_form", $l_nullphone);
+    eval_null("$day_form", $l_nulld_dob);
+    eval_null("$month_form", $l_nullm_dob);
+    eval_null("$year_form", $l_nully_dob);
+    eval_null("$idc_form", $l_nullidc);
+    eval_null("$address_form", $l_nulladd);
+    eval_email("$email_form");
+    eval_date("$year_form-$month_form-$day_form");
+    eval_repdb("$email_form", "USERS", "user_email", "and user_id<>'$skcv_user_id' and user_status='2'", $l_nullemail);
+    eval_repdb("$phonenumber_form", "USERS", "user_phonenumber", "and user_id<>'$skcv_user_id' and user_status='2'", $l_nullphone);
+    $suser = "select * from USERS where user_id='$skcv_user_id' and user_status='2' limit 1;";
+    $quser = db_query($suser);
+    $pu = $quser->fetch_object();
+    if ($confirm_form == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-success\">\n";
+      echo "      <div class=\"panel-heading\"><strong>$l_updating</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      echo "<table class=\"table table-responsive table-striped table-hover table-bordered\">\n";
+      table_row("fa fa-th-list", $l_verifying.":", "", "none", "$errorgraph");
+      if ($error == 1) {
+        table_row("fa fa-exclamation-triangle", $l_errorsfound.":", "", "none", "$errortext");
+        echo "<tr><td colspan=\"2\">\n";
+        go_back();
+        echo "</td></tr>\n";
+      } else {
+        $p_upd  = "update USERS set user_email='$email_form', ";
+        $p_upd .= "user_phonenumber = '$phonenumber_form', user_dateofbirth='$year_form-$month_form-$day_form', ";
+        $p_upd .= "user_idc='$idc_form', ";
+        $p_upd .= "user_address='$address_form' ";
+        $p_upd .= "where user_id='$skcv_user_id' and user_status='2' limit 1;";
+        $q_upd = db_query($p_upd);
+        if ($dblink->error == null) {
+          $upd_result = $label_ok;
+        } else {
+          $upd_result = $label_nook;
+        }
+        table_row("fa fa-check-square", $l_updatingok.":", "", "none", "$upd_result");
+        opslog("#UserID# $skcv_user #Action# UpdateData #WebHash# $skcv_hash #Result# OK $l_updateok");
+      }
+      echo "</table>\n";
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    } else {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      echo "      <div class=\"panel-heading\"><strong>$l_pleaseconfirm</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\" autocomplete=\"off\">\n";
+      echo "<table class=\"table table-responsive table-striped table-hover table-bordered\">\n";
+      table_row("fa fa-user", $l_name.":", "", "none", "$pu->user_name");
+      table_row("fa fa-info-circle", $l_idc.":", "", "none", "$idc_form");
+      echo "<input name=\"idc_form\" value=\"$idc_form\" type=\"hidden\">\n";
+      $datenacimiento_form  = $day_form." de ".literalmonth($month_form)." de ".$year_form;
+      table_row("fa fa-calendar", $l_dob.":", "", "none", "$datenacimiento_form");
+      echo "<input name=\"day_form\" value=\"$day_form\" type=\"hidden\">\n";
+      echo "<input name=\"month_form\" value=\"$month_form\" type=\"hidden\">\n";
+      echo "<input name=\"year_form\" value=\"$year_form\" type=\"hidden\">\n";
+      table_row("fa fa-envelope", $l_email.":", "", "none", "$email_form");
+      echo "<input name=\"email_form\" value=\"$email_form\" type=\"hidden\">\n";
+      table_row("fa fa-phone", $l_phonenumber.":", "", "none", "$phonenumber_form");
+      echo "<input name=\"phonenumber_form\" value=\"$phonenumber_form\" type=\"hidden\">\n";
+      table_row("fa fa-building", $l_city.":", "", "none", "$pu->user_city");
+      $direccion_mostrar = str_replace("\n", "<br />", $address_form);
+      table_row("fa fa-map-marker", $l_address.":", "", "textarea", "$direccion_mostrar");
+      echo "<input name=\"address_form\" value=\"$address_form\" type=\"hidden\">\n";
+      table_row("fa fa-location-arrow", $l_department.":", "", "none", "$pu->user_department");
+      echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+      echo "<input name=\"confirm_form\" value=\"1\" type=\"hidden\">\n";
+      table_row("fa fa-th-list", $l_verifying.":", "", "none", "$errorgraph");
+      if ($error == 1) {
+        table_row("fa fa-exclamation-triangle", $l_errorsfound.":", "", "none", "$errortext");
+        echo "<tr><td colspan=\"2\">\n";
+        go_back();
+        echo "</td></tr>\n";
+        echo "</table><br />\n";
+      } else {
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "<br />\n";
+      }
+      echo "</form>\n";
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    }
+  } else {
+    // Data Update
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_updatedata2</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    echo "<table class=\"table table-responsive table-striped table-hover table-bordered\">\n";
+    $q_datos  = "select * from USERS where user_id='$skcv_user_id' and user_status='2' limit 1;";
+    $p_datos = db_query($q_datos);
+    while ($du = $p_datos->fetch_object()) {
+      echo "<input name=\"name_form\" value=\"$du->user_name\" type=\"hidden\">\n";
+      table_row("fa fa-user", $l_name.":", "", "none", "$du->user_name");
+      table_row("fa fa-info-circle", $l_idc.":", "idc_form", "text", "$du->user_idc", "Carnet de Identidad");
+      $process_dob  = "<select name=\"day_form\">\n";
+      for ($i = 1; $i <= 31; $i++) {
+        if ($i == substr($du->user_dateofbirth,8,2)) {
+          $process_dob .= "<option value=\"$i\" selected>$i</option>\n";
+        } else {
+          $process_dob .= "<option value=\"$i\">$i</option>\n";
+        }
+      }    
+      $process_dob .= "</select> de <select name=\"month_form\">\n";
+      for ($i = 1; $i <= 12; $i++) {
+        if ($i == substr($du->user_dateofbirth,5,2)) {
+          $process_dob .= "<option value=\"$i\" selected>".literalmonth($i)."</option>\n";
+        } else {
+          $process_dob .= "<option value=\"$i\">".literalmonth($i)."</option>\n";
+        }
+      }
+      $process_dob .= "</select> de <select name=\"year_form\">\n";
+      for ($i = 1940; $i <= date("Y"); $i++) {
+        if ($i == substr($du->user_dateofbirth,0,4)) {
+          $process_dob .= "<option value=\"$i\" selected>$i</option>\n";
+        } else {
+          $process_dob .= "<option value=\"$i\">$i</option>\n";
+        }
+      }
+      $process_dob .= "</select>\n";
+      table_row("fa fa-calendar", $l_dob.":", "", "none", "$process_dob");
+      table_row("fa fa-envelope-o", $l_email.":", "email_form", "text", "$du->user_email", "E-Mail");
+      table_row("fa fa-phone", $l_phonenumber.":", "phonenumber_form", "text", "$du->user_phonenumber", "Tel&eacute;fono");
+      table_row("fa fa-building", $l_city.":", "", "none", "$du->user_city");
+      table_row("fa fa-map-marker", $l_address.":", "address_form", "textarea", "$du->user_address", "Direcci&oacute;n");
+      table_row("fa fa-location-arrow", $l_department.":", "", "none", "$du->user_department");
+      if ($du->user_latitude != 0 && $du->user_latitude != "") {
+        $ubicacion_mostrar  = "";
+        $ubicacion_mostrar .= "<a href=\"https://www.google.com/maps/@$du->user_latitude,$du->user_longitude,17z\" target=\"_blank\">";
+        $ubicacion_mostrar .= "<img class=\"img-responsive\" src=\"http://maps.googleapis.com/maps/api/staticmap?center=$du->user_latitude,$du->user_longitude&zoom=17&size=400x267&maptype=hybrid&markers=color:green%7C$du->user_latitude,$du->user_longitude&sensor=false\" border=\"1\" alt=\"Geoposicion:$du->user_latitude,$du->user_longitude\">";
+        $ubicacion_mostrar .= "</a>";
+        table_row("fa fa-street-view", $l_location.":", "", "none", "$ubicacion_mostrar");
+      }
+    }
+    echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+    echo "</table>\n";
+    $reset = "<button type=\"reset\" class=\"btn btn-danger\">$l_restart</button>";
+    $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+    echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+    echo "<br />\n";
+    echo "        </form>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

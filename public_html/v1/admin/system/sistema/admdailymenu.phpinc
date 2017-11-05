@@ -1,0 +1,423 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# AdmDailyMenu #WebHash# $skcv_hash");
+  text_open($l_admdailymenu2);
+  // Recepcion de Variables
+  $in_sent = receive_variable("POST", "in_sent");
+  $in_menudate = receive_variable("POST", "in_menudate");
+  $in_verify = receive_variable("POST", "in_verify");
+  $in_add = receive_variable("POST", "in_add");
+  $in_upd = receive_variable("POST", "in_upd");
+  $in_del = receive_variable("POST", "in_del");
+  $in_date = receive_variable("POST", "in_date");
+  $in_confirm = receive_variable("POST", "in_confirm");
+
+  $in_product = receive_variable("POST", "in_product");
+  $in_productname = receive_variable("POST", "in_productname");
+  $in_productdesc = receive_variable("POST", "in_productdesc");
+  $in_catforproduct = receive_variable("POST", "in_catforproduct");
+  $in_price = receive_variable("POST", "in_price");
+  $in_priceoriginal = receive_variable("POST", "in_priceoriginal");
+  $in_view = receive_variable("POST", "in_view");
+  $doit = receive_variable("POST", "doit");
+
+  if ($in_sent == 1) {
+    if ($in_upd == 1) {
+      if ($in_verify == 1) {
+        $error = 0;
+        $errortext = "";
+        $errorgraph = "";
+        eval_null("$in_date", $l_date);
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        echo "      <div class=\"panel-heading\"><strong>$l_dmupdateconf</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-calendar", "$l_date:", "", "none", "$in_date");
+        $txtdailymenu = "";
+        $selprods = 0;
+        $s_p = "select * from PRODUCTS where prod_status='1' and cat_id='1' order by prod_name;";
+        $q_p = db_query($s_p);
+        while ($p_p = $q_p->fetch_object()) {
+          $txtprice = "";
+          $s_pr = "select * from PRICES where price_status='1' and prod_id='$p_p->prod_id' order by price_createddate limit 1;";
+          $q_pr = db_query($s_pr);
+          $p_pr = $q_pr->fetch_object();
+          $txtprice = number_format($p_pr->price_price,2);
+          $valvalue = receive_variable("POST", "menu_".$p_p->prod_id);
+          if ($valvalue == "on") {
+            $txtdailymenu .= "  <i class=\"fa fa-check-square-o\"></i> $p_p->prod_name - $l_currency $txtprice<br />\n";
+            $txtdailymenu .= "  <input type=\"hidden\" name=\"menu_$p_p->prod_id\" value=\"on\">\n";
+            $selprods++;
+          } else {
+            $txtdailymenu .= "  <i class=\"fa fa-square-o\"></i> $p_p->prod_name - $l_currency $txtprice<br />\n";
+          }
+        }
+        table_row("fa fa-pin", "$l_menu:", "", "none", "$txtdailymenu");
+        eval_zero($selprods, $l_nullselprods);
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+          echo "</table>\n";
+        } else {
+          if ($in_confirm == 1) {
+            $ins_result = "";
+            // First disable the current menu
+            $p_upd  = "update DAILYMENU set dm_status='0', ";
+            $p_upd .= "dm_modbyid='$skcv_user_id', dm_modbyname='$skcv_user_name', ";
+            $p_upd .= "dm_moddate='$date $time', dm_modip='$user_ip' where ";
+            $p_upd .= "dm_date='$in_date' and dm_status='1';";
+            $q_upd = db_query($p_upd);
+            if ($dblink->error == null) {
+              $ins_result .= $label_ok;
+            } else {
+              $ins_result .= $label_nook;
+            }
+            opslog("#UserID# $skcv_user #Action# AdmDailyMenu #WebHash# $skcv_hash #Result# OK $l_dmdeletion $l_date: $in_menudate");
+            $q_p->data_seek(0);
+            while ($p_p = $q_p->fetch_object()) {
+              $valvalue = receive_variable("POST", "menu_".$p_p->prod_id);
+              if ($valvalue == "on") {
+                $p_ins  = "insert into DAILYMENU (dm_date, prod_id, dm_status, dm_createdbyid, ";
+                $p_ins .= "dm_createdbyname, dm_createddate, dm_createdip) VALUES(";
+                $p_ins .= "'$in_date', '$p_p->prod_id', '1', ";
+                $p_ins .= "'$skcv_user_id', '$skcv_user_name', '$date $time', '$user_ip');";
+                $q_ins = db_query($p_ins);
+                if ($dblink->error == null) {
+                  $ins_result .= $label_ok;
+                } else {
+                  $ins_result .= $label_nook;
+                }
+                opslog("#UserID# $skcv_user #Action# AdmDailyMenu #WebHash# $skcv_hash #Result# OK $l_dmaddition $l_date: $in_date $l_product: $p_p->prod_id");
+              }
+            }
+            table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$ins_result");
+            echo "</table>\n";
+          } else {
+            echo "</table>\n";
+            echo "<input name=\"in_date\" value=\"$in_date\" type=\"hidden\">\n";
+            echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_verify\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_confirm\" value=\"1\" type=\"hidden\">\n";
+            $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+            $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+            echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+          }
+        }
+        echo "</form>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      } else {
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        // echo "      <div class=\"panel-heading\"><strong>You can add a title here</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "$l_dmupdate<br />\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-calendar", "$l_date:", "", "none", proc_date($in_menudate));
+        $txtdailymenu = "";
+        $s_p = "select * from PRODUCTS where prod_status='1' and cat_id='1' order by prod_name;";
+        $q_p = db_query($s_p);
+        while ($p_p = $q_p->fetch_object()) {
+          $txtprice = "";
+          $s_pr = "select * from PRICES where price_status='1' and prod_id='$p_p->prod_id' order by price_createddate limit 1;";
+          $q_pr = db_query($s_pr);
+          $p_pr = $q_pr->fetch_object();
+          $txtprice = number_format($p_pr->price_price,2);
+          $s_dm = "select * from DAILYMENU where dm_date='$in_menudate' and dm_status='1' and prod_id='$p_p->prod_id';";
+          $q_dm = db_query($s_dm);
+          if ($q_dm->num_rows != 0) {
+            $txtdailymenu .= "  <input type=\"checkbox\" name=\"menu_$p_p->prod_id\" checked> $p_p->prod_name - $l_currency $txtprice<br />\n";
+          } else {
+            $txtdailymenu .= "  <input type=\"checkbox\" name=\"menu_$p_p->prod_id\"> $p_p->prod_name - $l_currency $txtprice<br />\n";
+          }
+        }
+        table_row("fa fa-map-pin", "$l_menu:", "", "none", "$txtdailymenu");
+        echo "<input name=\"in_date\" value=\"$in_menudate\" type=\"hidden\">\n";
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_verify\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      }
+    }
+    if ($in_del == 1) {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-8\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      echo "      <div class=\"panel-heading\"><strong>$l_dmfordate ".proc_date($in_menudate)."</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+      if ($in_confirm == 1) {
+        echo "$l_dmdeleting<br />\n";
+      } else {
+        echo "$l_dmdelconfirm<br />\n";
+      }
+      table_row("fa fa-calendar", "$l_date:", "", "none", proc_date($in_menudate));
+      $s_dm = "select * from DAILYMENU where dm_date='$in_menudate' and dm_status='1';";
+      $q_dm = db_query($s_dm);
+      $txtdailymenu = "";
+      $selprods = 0;
+      while ($p_dm=$q_dm->fetch_object()) {
+        $s_p = "select * from PRODUCTS where prod_id='$p_dm->prod_id' limit 1;";
+        $q_p = db_query($s_p);
+        $p_p = $q_p->fetch_object();
+        $txtdailymenu .= "$p_p->prod_name - $l_currency ";
+        $s_price = "select * from PRICES where prod_id='$p_dm->prod_id' and price_status='1' order by price_createddate;";
+        $q_price = db_query($s_price);
+        $p_price = $q_price->fetch_object();
+        $txtdailymenu .= number_format($p_price->price_price,2);
+        $txtdailymenu .= "<br />\n";
+        $selprods++;
+      }
+      if ($selprods == 0) {
+        $txtdailymenu = $l_dmnomenu;
+      }
+      table_row("fa fa-pin", "$l_menu:", "", "none", "$txtdailymenu");
+      if ($in_confirm == 1) {
+        $ins_result = "";
+        $p_upd  = "update DAILYMENU set dm_status='0', ";
+        $p_upd .= "dm_modbyid='$skcv_user_id', dm_modbyname='$skcv_user_name', ";
+        $p_upd .= "dm_moddate='$date $time', dm_modip='$user_ip' where ";
+        $p_upd .= "dm_date='$in_menudate' and dm_status='1';";
+        $q_upd = db_query($p_upd);
+        if ($dblink->error == null) {
+          $ins_result .= $label_ok;
+        } else {
+          $ins_result .= $label_nook;
+        }
+        opslog("#UserID# $skcv_user #Action# AdmDailyMenu #WebHash# $skcv_hash #Result# OK $l_dmdeletion $l_date: $in_menudate");
+        table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$ins_result");
+        echo "</table>\n";
+      } else {
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_menudate\" value=\"$in_menudate\" type=\"hidden\">\n";
+        echo "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_confirm\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+      }
+      echo "</form>\n";
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    }
+    if ($in_add == 1) {
+      if ($in_verify == 1) {
+        $error = 0;
+        $errortext = "";
+        $errorgraph = "";
+        eval_null("$in_date", $l_date);
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        echo "      <div class=\"panel-heading\"><strong>$l_dmcreateconf</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-calendar", "$l_date:", "", "none", "$in_date");
+        $txtdailymenu = "";
+        $selprods = 0;
+        $s_p = "select * from PRODUCTS where prod_status='1' and cat_id='1' order by prod_name;";
+        $q_p = db_query($s_p);
+        while ($p_p = $q_p->fetch_object()) {
+          $txtprice = "";
+          $s_pr = "select * from PRICES where price_status='1' and prod_id='$p_p->prod_id' order by price_createddate limit 1;";
+          $q_pr = db_query($s_pr);
+          $p_pr = $q_pr->fetch_object();
+          $txtprice = number_format($p_pr->price_price,2);
+          $valvalue = receive_variable("POST", "menu_".$p_p->prod_id);
+          if ($valvalue == "on") {
+            $txtdailymenu .= "  <i class=\"fa fa-check-square-o\"></i> $p_p->prod_name - $l_currency $txtprice<br />\n";
+            $txtdailymenu .= "  <input type=\"hidden\" name=\"menu_$p_p->prod_id\" value=\"on\">\n";
+            $selprods++;
+          } else {
+            $txtdailymenu .= "  <i class=\"fa fa-square-o\"></i> $p_p->prod_name - $l_currency $txtprice<br />\n";
+          }
+        }
+        table_row("fa fa-pin", "$l_menu:", "", "none", "$txtdailymenu");
+        eval_zero($selprods, $l_nullselprods);
+        eval_repdb("$in_date", "DAILYMENU", "dm_date", "and dm_status='1'", $l_dmfordate);
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+          echo "</table>\n";
+        } else {
+          if ($in_confirm == 1) {
+            $q_p->data_seek(0);
+            $ins_result = "";
+            while ($p_p = $q_p->fetch_object()) {
+              $valvalue = receive_variable("POST", "menu_".$p_p->prod_id);
+              if ($valvalue == "on") {
+                $p_ins  = "insert into DAILYMENU (dm_date, prod_id, dm_status, dm_createdbyid, ";
+                $p_ins .= "dm_createdbyname, dm_createddate, dm_createdip) VALUES(";
+                $p_ins .= "'$in_date', '$p_p->prod_id', '1', ";
+                $p_ins .= "'$skcv_user_id', '$skcv_user_name', '$date $time', '$user_ip');";
+                $q_ins = db_query($p_ins);
+                if ($dblink->error == null) {
+                  $ins_result .= $label_ok;
+                } else {
+                  $ins_result .= $label_nook;
+                }
+                opslog("#UserID# $skcv_user #Action# AdmDailyMenu #WebHash# $skcv_hash #Result# OK $l_dmaddition $l_date: $in_date $l_product: $p_p->prod_id");
+              }
+            }
+            table_row("fa fa-tasks", "$l_updatingok:", "", "none", "$ins_result");
+            echo "</table>\n";
+          } else {
+            echo "</table>\n";
+            echo "<input name=\"in_date\" value=\"$in_date\" type=\"hidden\">\n";
+            echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_verify\" value=\"1\" type=\"hidden\">\n";
+            echo "<input name=\"in_confirm\" value=\"1\" type=\"hidden\">\n";
+            $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+            $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+            echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+          }
+        }
+        echo "</form>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      } else {
+        include_once("$pathinc/javadate.phpinc");
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        // echo "      <div class=\"panel-heading\"><strong>You can add a title here</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        if ($in_menudate == "") { $in_menudate = date("Y-m-d", strtotime("$in_menudate")); }
+        $dateforfield = date("Y-m-d", strtotime("$in_menudate"));
+        $in_datefield = "<input type=text name=\"in_date\" size=10 value=\"$dateforfield\"> <input name=\"b1\" type=\"button\" value=\"...\" onClick=\"javascript:pedirFecha(in_date,'Menu Date');\">";
+        table_row("fa fa-calendar", "$l_date:", "", "none", "$in_datefield");
+        table_row("", "", "", "none", "$l_reminderdateformat");
+        $txtdailymenu = "";
+        $s_p = "select * from PRODUCTS where prod_status='1' and cat_id='1' order by prod_name;";
+        $q_p = db_query($s_p);
+        while ($p_p = $q_p->fetch_object()) {
+          $txtprice = "";
+          $s_pr = "select * from PRICES where price_status='1' and prod_id='$p_p->prod_id' order by price_createddate limit 1;";
+          $q_pr = db_query($s_pr);
+          $p_pr = $q_pr->fetch_object();
+          $txtprice = number_format($p_pr->price_price,2);
+          $txtdailymenu .= "  <input type=\"checkbox\" name=\"menu_$p_p->prod_id\"> $p_p->prod_name - $l_currency $txtprice<br />\n";
+        }
+        table_row("fa fa-map-pin", "$l_menu:", "", "none", "$txtdailymenu");
+        echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"in_verify\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_dmcreate</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      }
+    } 
+  } else {
+    if ($in_menudate == "") { $in_menudate=date("Y-m-d", strtotime("Today")); }
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-8\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_dmfordate ".proc_date($in_menudate)."</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    // table_row("fa fa-calendar", "$l_date:", "", "none", proc_date($in_menudate));
+    $s_dm = "select * from DAILYMENU where dm_date='$in_menudate' and dm_status='1';";
+    $q_dm = db_query($s_dm);
+    $txtdailymenu = "";
+    $selprods = 0;
+    while ($p_dm=$q_dm->fetch_object()) {
+      $s_p = "select * from PRODUCTS where prod_id='$p_dm->prod_id' limit 1;";
+      $q_p = db_query($s_p);
+      $p_p = $q_p->fetch_object();
+      $txtdailymenu .= "$p_p->prod_name - $l_currency ";
+      $s_price = "select * from PRICES where prod_id='$p_dm->prod_id' and price_status='1' order by price_createddate;";
+      $q_price = db_query($s_price);
+      $p_price = $q_price->fetch_object();
+      $txtdailymenu .= number_format($p_price->price_price,2);
+      $txtdailymenu .= "<br />\n";
+      $selprods++;
+    }
+    if ($selprods == 0) {
+      $txtdailymenu = $l_dmnomenu;
+    }
+    table_row("fa fa-pin", "$l_menu:", "", "none", "$txtdailymenu");
+    $txtoptions  = "<table border=\"0\"><tr>";
+    $newdate = date("Y-m-d", strtotime("$in_menudate -1 day"));
+    $txtoptions .= "<td><form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    $txtoptions .= "<input name=\"in_menudate\" value=\"$newdate\" type=\"hidden\">\n";
+    $txtoptions .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-backward\"> </i></button>\n";
+    $txtoptions .= "</form></td>\n";
+    if ($selprods != 0) {
+      $txtoptions .= "<td><form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $txtoptions .= "<input name=\"in_menudate\" value=\"$in_menudate\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_upd\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-pencil-square-o\"> </i></button>\n";
+      $txtoptions .= "</form></td>\n";
+      $txtoptions .= "<td><form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $txtoptions .= "<input name=\"in_menudate\" value=\"$in_menudate\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_del\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-times\"> </i></button>\n";
+      $txtoptions .= "</form></td>\n";
+    } else {
+      $txtoptions .= "<td><form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+      $txtoptions .= "<input name=\"in_menudate\" value=\"$in_menudate\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+      $txtoptions .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-plus\"> </i></button>\n";
+      $txtoptions .= "</form></td>\n";
+    }
+    $newdate = date("Y-m-d", strtotime("$in_menudate +1 day"));
+    $txtoptions .= "<td><form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    $txtoptions .= "<input name=\"in_menudate\" value=\"$newdate\" type=\"hidden\">\n";
+    $txtoptions .= "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-forward\"> </i></button>\n";
+    $txtoptions .= "</form></td>\n";
+    $txtoptions .= "</tr></table>\n";
+    table_row("fa fa-pin", "$l_options:", "", "none", "$txtoptions");
+    echo "</table>\n";
+    echo "<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\">\n";
+    echo "<input name=\"in_menudate\" value=\"$in_menudate\" type=\"hidden\">\n";
+    echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+    echo "<input name=\"in_add\" value=\"1\" type=\"hidden\">\n";
+    echo "<button type=\"submit\" class=\"btn btn-xs btn-link\"><i class=\"fa fa-plus\"> $l_presshere</i></button> $l_dmadd\n";
+    echo "</form>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

@@ -1,0 +1,128 @@
+<?php
+  // Menu
+  $activepagemenu = "class=\"selected\"";
+  $activecollapse = "class=\"active\"";
+
+  $dashboard_active = "";
+  $infolacuisine_active = "";
+  $updatedata_active = "";
+  $updatepass_active = "";
+  $documents_active = "";
+  $viewreservations_active = "";
+  $viewreservationsk_active = "";
+  $viewdailymenu_active = "";
+  $emitirmovil_active = "";
+  $sales_active = "";
+  $admcats_active = "";
+  $admproducts_active = "";
+  $admdailymenu_active = "";
+  $admusers_active = "";
+  $reportbyprod_active = "";
+  $reportbycat_active = "";
+  $reportbydate_active = "";
+
+  $opciones_collapse = "";
+  $kitchen_collapse = "";
+  $cashier_collapse = "";
+  $reports_collapse = "";
+  $productscollapse = "";
+  $users_collapse = "";
+
+  // Dashboard
+  if ($action == "dashboard") { $dashboard_active = $activepagemenu; }
+  if ($action == "changelog") { $dashboard_active = $activepagemenu; }
+  // Opciones
+  if ($action == "infolacuisine") { $infolacuisine_active = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "updatedata") { $updatedata_active = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "updatepass") { $updatepass_active = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "documents") { $documents_active = $activepagemenu; $opciones_collapse = $activecollapse; }
+  // Kitchen
+  if ($action == "viewreservationsk") { $viewreservationsk_active = $activepagemenu; $kitchen_collapse = $activecollapse; }
+  if ($action == "viewdailymenu") { $viewdailymenu_active = $activepagemenu; $kitchen_collapse = $activecollapse; }
+  // Cashier
+  if ($action == "viewreservations") { $viewreservations_active = $activepagemenu; $cashier_collapse = $activecollapse; }
+  if ($action == "sales") { $sales_active = $activepagemenu; $cashier_collapse = $activecollapse; }
+  // Products
+  if ($action == "admcats") { $admcats_active = $activepagemenu; $productscollapse = $activecollapse; }
+  if ($action == "admcphotos") { $admcats_active = $activepagemenu; $productscollapse = $activecollapse; }
+  if ($action == "admproducts") { $admproducts_active = $activepagemenu; $productscollapse = $activecollapse; }
+  if ($action == "admpphotos") { $admproducts_active = $activepagemenu; $productscollapse = $activecollapse; }
+  if ($action == "admdailymenu") { $admdailymenu_active = $activepagemenu; $productscollapse = $activecollapse; }
+  // Reports
+  if ($action == "reportbyprod") { $reportbyprod_active = $activepagemenu; $reports_collapse = $activecollapse; }
+  if ($action == "reportbycat") { $reportbycat_active = $activepagemenu; $reports_collapse = $activecollapse; }
+  if ($action == "reportbydate") { $reportbydate_active = $activepagemenu; $reports_collapse = $activecollapse; }
+  // Users
+  if ($action == "admusers") { $admusers_active = $activepagemenu; $users_collapse = $activecollapse; }
+  if ($action == "updusers") { $admusers_active = $activepagemenu; $users_collapse = $activecollapse; }
+  if ($action == "createuser") { $admusers_active = $activepagemenu; $users_collapse = $activecollapse; }
+
+  // echo "      <!-- navbar side -->\n";
+  echo "      <nav class=\"navbar-default navbar-static-side\" role=\"navigation\">\n";
+  // echo "        <!-- sidebar-collapse -->\n";
+  echo "        <div class=\"sidebar-collapse\">\n";
+  // echo "          <!-- side-menu -->\n";
+  echo "          <ul class=\"nav\" id=\"side-menu\">\n";
+  if ($skcv_level_id >= 1) { // Todos
+    echo "            <li class=\"selected\"><br /><br /></li>\n";
+    echo "            <li $dashboard_active><a href=\"$PHPSELF?action=dashboard\"><i class=\"fa fa-dashboard fa-fw\"></i>$l_dashboard</a></li>\n";
+    echo "            <li $opciones_collapse><a href=\"#\"><i class=\"fa fa-sitemap fa-fw\"></i>$l_basicoptions <span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $infolacuisine_active><a href=\"$PHPSELF?action=infolacuisine\">$l_whatis</a></li>\n";
+    echo "              <li $updatedata_active><a href=\"$PHPSELF?action=updatedata\">$l_updatedata</a></li>\n";
+    echo "              <li $updatepass_active><a href=\"$PHPSELF?action=updatepass\">$l_updatepass</a></li>\n";
+    echo "              <li $documents_active><a href=\"$PHPSELF?action=documents\">$l_documentation</a></li>\n";
+    echo "            </ul>\n";
+    // echo "            <!-- second-level-items -->\n";
+    echo "            </li>\n";
+  }
+  if ($skcv_level_id >= 30) { // Kitchen
+    echo "          <li $kitchen_collapse><a href=\"#\"><i class=\"fa fa-file-text-o  fa-fw\"></i> $l_kitchen<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $viewreservationsk_active><a href=\"$PHPSELF?action=viewreservationsk\">$l_viewreservations</a></li>\n";
+    echo "              <li $viewdailymenu_active><a href=\"$PHPSELF?action=viewdailymenu\">$l_viewdailymenu</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 40) { // Sales or Cashier
+    echo "          <li $cashier_collapse><a href=\"#\"><i class=\"fa fa-file-text-o  fa-fw\"></i> $l_cashier<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $viewreservations_active><a href=\"$PHPSELF?action=viewreservations\">$l_viewreservations</a></li>\n";
+    echo "              <li $sales_active><a href=\"$PHPSELF?action=sales\">$l_sales</a></li>\n";
+    echo "            </ul>\n";
+  }
+  if ($skcv_level_id >= 50) { // Resto Admin
+    echo "          <li $reports_collapse><a href=\"#\"><i class=\"fa fa-line-chart\"></i> $l_reports<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $reportbyprod_active><a href=\"$PHPSELF?action=reportbyprod\">$l_reportbyprod</a></li>\n";
+    echo "              <li $reportbycat_active><a href=\"$PHPSELF?action=reportbycat\">$l_reportbycat</a></li>\n";
+    echo "              <li $reportbydate_active><a href=\"$PHPSELF?action=reportbydate\">$l_reportbydate</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 80 ) { // Gerencia
+    echo "          <li $productscollapse><a href=\"#\"><i class=\"fa fa-tasks\"></i> $l_products<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $admcats_active><a href=\"$PHPSELF?action=admcats\">$l_admcats</a></li>\n";
+    echo "              <li $admproducts_active><a href=\"$PHPSELF?action=admproducts\">$l_admprods</a></li>\n";
+    echo "              <li $admdailymenu_active><a href=\"$PHPSELF?action=admdailymenu\">$l_admdailymenu</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 80) { // Gerencia
+    echo "          <li $users_collapse><a href=\"#\"><i class=\"fa fa-users\"></i> $l_users<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $admusers_active><a href=\"$PHPSELF?action=admusers\">$l_admusers</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 1) { // Todos
+    echo "          <li><a href=\"$PHPSELF?action=logout&logout_attempt=1\"><i class=\"fa fa-exclamation-circle\"></i> $l_logout</a></li>\n";
+  }
+  echo "          </ul>\n";
+  // echo "          <!-- end side-menu -->\n";
+  echo "        </div>\n";
+  // echo "        <!-- end sidebar-collapse -->\n";
+  echo "      </nav>\n";
+  // echo "      <!-- end navbar side -->\n";
+

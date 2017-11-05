@@ -1,0 +1,33 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# Documents #WebHash# $skcv_hash");
+  text_open("Documents");
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-8 col-sm-8\">\n";
+  echo "    <div class=\"alert alert-info\">";
+  echo "Los documents est&aacute;n disponibles en formato <i class=\"fa fa-file-pdf-o \"></i> PDF.<br />\n";
+  echo "Presione sobre el documento correspondiente para iniciar su descarga:<br />\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-8 col-sm-8\">\n";
+  echo "    <div class=\"panel panel-primary\">\n";
+  echo "        <div class=\"panel-heading\"><strong>Sistema ALFA</strong></div>\n";
+  echo "        <div class=\"panel-body\">\n";
+  echo "<ul>\n";
+  if ($skcv_level_id >=40) {
+    echo "<li><a href=\"descargar.base?fichero=manuales/Manual_Alfa_Facturacion_2_1.pdf\">Manual para el nivel Facturaci&oacute;n v.2.1</a></li>\n";
+  }
+  if ($skcv_level_id >=48) {
+    echo "<li><a href=\"descargar.base?fichero=manuales/Manual_Alfa_Contabilidad_2_1.pdf\">Manual para el nivel Contabilidad v.2.1</a></li>\n";
+  }
+  if ($skcv_level_id >=75) {
+    echo "<li><a href=\"descargar.base?fichero=manuales/Manual_Alfa_Gerencia_2_00.pdf\">Manual para el nivel Gerencia v.2.00</a></li>\n";
+  }
+  echo "</ul>\n";
+  echo "        </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  text_close();
+?>

@@ -1,0 +1,14 @@
+<?php
+  echo "      </div>\n";
+  // echo "      <!-- end page-wrapper -->\n";
+  echo "    </div>\n";
+  // echo "    <!-- end wrapper -->\n";
+  // echo "    <!-- Core Scripts - Include with every page -->\n";
+  echo "    <script src=\"assets/plugins/jquery-1.10.2.js\"></script>\n";
+  echo "    <script src=\"assets/plugins/bootstrap/bootstrap.min.js\"></script>\n";
+  echo "    <script src=\"assets/plugins/metisMenu/jquery.metisMenu.js\"></script>\n";
+  echo "    <script src=\"assets/plugins/pace/pace.js\"></script>\n";
+  echo "    <script src=\"assets/scripts/siminta.js\"></script>\n";
+  echo "  </body>\n";
+  echo "</html>\n";
+

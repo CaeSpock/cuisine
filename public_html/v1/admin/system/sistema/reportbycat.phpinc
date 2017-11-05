@@ -1,0 +1,62 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# ReportByCat #WebHash# $skcv_hash");
+  text_open($l_reportbycat);
+  // Receive variables
+  $in_sent = receive_variable("POST", "in_sent");
+  $txtStartDate = receive_variable("POST", "txtStartDate");
+  $txtEndDate = receive_variable("POST", "txtEndDate");
+
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-md-7\">\n";
+  echo "    <div class=\"panel panel-primary\">\n";
+  echo "      <div class=\"panel-heading\"><strong>$l_reportbycat</strong></div>\n";
+  echo "      <div class=\"panel-body\">\n";
+  if ($in_sent == 1) {
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    $datein_text = $txtStartDate. " - " . $txtEndDate;
+    table_row("fa fa-calendar", "$l_reportdaterange:", "", "none", "$datein_text");
+    echo "</table>\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    echo "<tr>\n";
+    table_header("<span style=\"font-size: 14px\">$l_categorie:</span>");
+    table_header("<span style=\"font-size: 14px\">$l_reportquantity:</span>");
+    echo "</tr>\n";
+    $ss  = "select cat_id, count(*) as quantity from SALEPRODUCTS where sp_status='1' and ";
+    $ss .= "(sp_createddate between '$txtStartDate 00:00:00' and '$txtEndDate 23:59:59') ";
+    $ss .= "group by cat_id order by quantity desc, cat_id asc;";
+    $qs = db_query($ss);
+    while ($ps = $qs->fetch_object()) {
+      echo "<tr>\n";
+      echo "  <td><span style=\"font-size: 14px\">";
+      $spi  = "select * from CATEGORIES where cat_id='$ps->cat_id' limit 1;";
+      $qpi = db_query($spi);
+      $ppp = $qpi->fetch_object();
+      echo "$ppp->cat_name";
+      echo "</span></td>\n";
+      echo "  <td><span style=\"font-size: 14px\">$ps->quantity</span></td>\n";
+      echo "</tr>\n";
+    }
+    echo "</table>\n";
+    opslog("#UserID# $skcv_user #Action# ReportByCat #WebHash# $skcv_hash #Result# OK $l_reportdaterange: $txtStartDate - $txtEndDate");
+  } else {
+    echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\" autocomplete=\"off\">\n";
+    echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+    $date1 = date("Y-m-01");
+    $datein_text  = "<input type=text name=\"txtStartDate\" size=10 value=\"$date1\"> <input name=\"b1\" type=\"button\" value=\"...\" onClick=\"javascript:pedirFecha(txtStartDate,'Fecha de Registro');\">";
+    $datein_text .= " - ";
+    $date2 = date("Y-m-d");
+    $datein_text .= "<input type=text name=\"txtEndDate\" size=10 value=\"$date2\"> <input name=\"b1\" type=\"button\" value=\"...\" onClick=\"javascript:pedirFecha(txtEndDate,'Fecha de Registro');\">";
+    table_row("fa fa-calendar", "$l_reportdaterange:", "", "none", "$datein_text");
+    echo "<input name=\"in_sent\" value=\"1\" type=\"hidden\">\n";
+    echo "</table>\n";
+    $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+    $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_reportgenerate</button>";
+    echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+    echo "</form>\n";
+  }
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  text_close();
+?>

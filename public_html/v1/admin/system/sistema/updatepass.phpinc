@@ -1,0 +1,73 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# UpdatePass #WebHash# $skcv_hash");
+  text_open($l_updatepass);
+  // Recibir variables
+  $submit_form = receive_variable("POST", "submit_form");
+  $confirm_form = receive_variable("POST", "confirm_form");
+  $current_form = receive_variable("POST", "current_form");
+  $new_form = receive_variable("POST", "new_form");
+  $new2_form = receive_variable("POST", "new2_form");
+
+  if ($submit_form == 1) { 
+    $error = 0;
+    $errortext = "";
+    $errorgraph = "";
+    eval_null("$current_form", $l_nullpassword);
+    eval_null("$new_form", $l_nullnewpassword);
+    eval_null("$new2_form", $l_nullnewpassword2);
+    eval_equal("$new_form", "$new2_form", $l_unmatchpasswords);
+    eval_existsdb("$current_form", "USERS", "user_password", "and user_id='$skcv_user_id' and user_status='2'", $l_repeatedpassword);
+    $strengthpassword = testPassword($new_form);
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_updatingpass</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "<table class=\"table table-responsive table-striped table-hover table-bordered\">\n";
+    table_row("fa fa-th-list", $l_verifying.":", "", "none", "$errorgraph");
+    table_row("fa fa-lock", $l_qualitypass.":", "", "none", "$strengthpassword/10");
+    if ($error == 1) {
+      table_row("fa fa-exclamation-triangle", $l_errorsfound.":", "", "none", "$errortext");
+      echo "<tr><td colspan=\"2\">\n";
+      go_back();
+      echo "</td></tr>\n";
+    } else {
+      $p_upd  = "update USERS set user_password='$new_form' ";
+      $p_upd .= "where user_id='$skcv_user_id' and user_status='2' limit 1;";
+      $q_upd = db_query($p_upd);
+      if ($dblink->error == null) {
+        $upd_result = $label_ok;
+      } else {
+        $upd_result = $label_nook;
+      }
+      table_row("fa fa-check-square", $l_updatingok.":", "", "none", "$upd_result");
+      opslog("#UserID# $skcv_user #Action# UpdatePass #WebHash# $skcv_hash #Result# OK $l_updateok");
+    }
+    echo "</table>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  } else { 
+    // Password update
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-6\">\n";
+    echo "    <div class=\"panel panel-primary\">\n";
+    echo "      <div class=\"panel-heading\"><strong>$l_updatedata2</strong></div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "        <form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\" autocomplete=\"off\">\n";
+    form_line("fa fa-key", "", "current_form", "password", "", $l_currentpassword);
+    form_line("fa fa-key", "", "new_form", "password", "", $l_newpassword);
+    form_line("fa fa-key", "", "new2_form", "password", "", $l_confirmnewpassword);
+    echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+    $reset = "";
+    $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+    echo "$reset &nbsp;&nbsp;&nbsp; $submit\n";
+    echo "        </form>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>

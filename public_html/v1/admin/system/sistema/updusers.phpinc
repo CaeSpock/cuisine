@@ -1,0 +1,265 @@
+<?php
+  opslog("#UserID# $skcv_user #Action# UpdUsers #WebHash# $skcv_hash");
+  text_open($l_updusers);
+  // Recibir variables
+  $submit_form = receive_variable("POST", "submit_form");
+  $identif_form = receive_variable("POST", "identif_form");
+  $modify_form = receive_variable("POST", "modify_form");
+  $confirm_form = receive_variable("POST", "confirm_form");
+  $name_form = receive_variable("POST", "name_form");
+  $email_form = receive_variable("POST", "email_form");
+  $phonenumber_form = receive_variable("POST", "phonenumber_form");
+  $day_form = receive_variable("POST", "day_form");
+  $month_form = receive_variable("POST", "month_form");
+  $year_form = receive_variable("POST", "year_form");
+  $idc_form = receive_variable("POST", "idc_form");
+  $city_form = receive_variable("POST", "city_form");
+  $department_form = receive_variable("POST", "department_form");
+  $address_form = receive_variable("POST", "address_form");
+  $process_status = receive_variable("POST", "process_status");
+  $loginname_form = receive_variable("POST", "loginname_form");
+  $process_currentstatus = receive_variable("POST", "process_currentstatus");
+
+  if ($submit_form == 1) {
+    if ($modify_form == 1) {
+      $error = 0;
+      $errortext = "";
+      $errorgraph = "";
+      eval_null("$name_form", "del nombre");
+      eval_null("$email_form", "del E-Mail");
+      eval_null("$phonenumber_form", "del tel&eacute;fono");
+      eval_null("$day_form", "del d&iacute;a de nacimiento");
+      eval_null("$month_form", "del mes de nacimiento");
+      eval_null("$year_form", "del a&ntilde;o de nacimiento");
+      eval_null("$idc_form", "del carnet de identidad");
+      eval_null("$city_form", "de la ciudad");
+      eval_null("$address_form", "de la direcci&oacute;n");
+      eval_null("$department_form", "del departamento");
+      eval_email("$email_form");
+      eval_date("$year_form-$month_form-$day_form");
+      eval_repdb("$email_form", "USERS", "user_email", "and user_id<>'$identif_form' and user_status='2'", "del E-Mail");
+      eval_repdb("$phonenumber_form", "USERS", "user_phonenumber", "and user_id<>'$identif_form' and user_status='2'", "del tel&eacute;fono");
+      $sc = "select * from CITIES where city_id='$city_form' limit 1;";
+      $qc = db_query($sc);
+      $rc = $qc->fetch_object();
+      $city_name = $rc->city_name;
+      $sd = "select * from DEPARTMENTS where department_id='$department_form' limit 1;";
+      $qd = db_query($sd);
+      $rd = $qd->fetch_object();
+      $department_name = $rd->department_name;
+      if ($confirm_form == 1) {
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        echo "      <div class=\"panel-heading\"><strong>$l_updatingusers</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+        } else {
+          $p_upd  = "update USERS set user_name='$name_form', user_idc='$idc_form', ";
+          $p_upd .= "user_dateofbirth='$year_form-$month_form-$day_form', user_email='$email_form', ";
+          $p_upd .= "user_phonenumber='$phonenumber_form', city_id='$city_form', user_city='$city_name', ";
+          $p_upd .= "user_address='$address_form', department_id='$department_form', ";
+          $p_upd .= "user_department='$department_name', user_moddate='$date $time', ";
+          $p_upd .= "user_modbyid='$skcv_user_id', user_modbyname='$skcv_user_name', ";
+          $p_upd .= "user_modip='$user_ip' ";
+          if ($process_currentstatus<>$process_status) {
+            $p_upd .= ", user_status='$process_status', user_statusdate='$date $time', ";
+            $p_upd .= "user_statusbyid='$skcv_user_id', user_statusbyname='$skcv_user_name', ";
+            $p_upd .= "user_statusip='$user_ip' ";
+          }
+          $p_upd .= "where user_id='$identif_form';";
+          $q_upd = db_query($p_upd);
+          if ($dblink->error == null) {
+            $ins_result = $label_ok;
+          } else {
+            $ins_result = $label_nook;
+          }
+          table_row("fa fa-user", "$l_updatingok:", "", "none", "$ins_result");
+          opslog("#UserID# $skcv_user #Action# UpdUsers #WebHash# $skcv_hash #Result# OK $l_updusers: $identif_form $l_status: $process_status");
+        }
+        echo "</table>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      } else {
+        echo "<div class=\"row\">\n";
+        echo "  <div class=\"col-md-8\">\n";
+        echo "    <div class=\"panel panel-primary\">\n";
+        echo "      <div class=\"panel-heading\"><strong>$l_userdata</strong></div>\n";
+        echo "      <div class=\"panel-body\">\n";
+        echo "$l_pleaseconfirm<br />\n";
+        echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\" autocomplete=\"off\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-info-circle", "$l_id:", "", "none", "$identif_form");
+        echo "<input type=\"hidden\" name=\"identif_form\" value=\"$identif_form\">\n";
+        table_row("fa fa-user", "$l_username:", "", "none", "$loginname_form");
+        echo "<input type=\"hidden\" name=\"loginname_form\" value=\"$loginname_form\">\n";
+        table_row("fa fa-user", "$l_name:", "", "none", "$name_form");
+        echo "<input name=\"name_form\" value=\"$name_form\" type=\"hidden\">\n";
+        table_row("fa fa-user", "$l_idc:", "", "none", "$idc_form");
+        echo "<input name=\"idc_form\" value=\"$idc_form\" type=\"hidden\">\n";
+        $datenacimiento_form  = $day_form." de ".literalmonth($month_form)." de ".$year_form;
+        table_row("fa fa-calendar", "$l_dob:", "", "none", "$datenacimiento_form");
+        echo "<input name=\"day_form\" value=\"$day_form\" type=\"hidden\">\n";
+        echo "<input name=\"month_form\" value=\"$month_form\" type=\"hidden\">\n";
+        echo "<input name=\"year_form\" value=\"$year_form\" type=\"hidden\">\n";
+        table_row("fa fa-envelope", "$l_email:", "", "none", "$email_form");
+        echo "<input name=\"email_form\" value=\"$email_form\" type=\"hidden\">\n";
+        table_row("fa fa-phone", "$l_phonenumber:", "", "none", "$phonenumber_form");
+        echo "<input name=\"phonenumber_form\" value=\"$phonenumber_form\" type=\"hidden\">\n";
+        table_row("fa fa-map-o", "$l_city:", "", "none", "$city_name");
+        echo "<input name=\"city_form\" value=\"$city_form\" type=\"hidden\">\n";
+        table_row("fa fa-map-marker", "$l_address:", "", "textarea", "$address_form");
+        echo "<input name=\"address_form\" value=\"$address_form\" type=\"hidden\">\n";
+        table_row("fa fa-location-arrow", "$l_department:", "", "none", "$department_name");
+        echo "<input name=\"department_form\" value=\"$department_form\" type=\"hidden\">\n";
+        $userstatustxt = $process_status;
+        $q_ss = "select * from USERSTATUS where us_id='$process_status' limit 1;";
+        $p_ss = db_query($q_ss);
+        $d_ss = $p_ss->fetch_object();
+        $userstatustxt = $d_ss->us_name;
+        table_row("fa fa-certificate", "$l_status:", "", "none", "$userstatustxt [$process_status]");
+        echo "<input name=\"process_status\" value=\"$process_status\" type=\"hidden\">\n";
+        echo "<input name=\"process_currentstatus\" value=\"$process_currentstatus\" type=\"hidden\">\n";
+        echo "<input name=\"modify_form\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"confirm_form\" value=\"1\" type=\"hidden\">\n";
+        table_row("fa fa-th-list", "$l_verifying:", "", "none", "$errorgraph");
+        if ($error == 1) {
+          table_row("fa fa-exclamation-triangle", "$l_errorsfound:", "", "none", "$errortext");
+          echo "<tr><td colspan=\"2\">\n";
+          go_back();
+          echo "</td></tr>\n";
+          echo "</table>\n";
+        } else {
+          echo "</table>\n";
+          $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+          $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_confirm</button>";
+          echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        }
+        echo "</form>\n";
+        echo "      </div>\n";
+        echo "    </div>\n";
+        echo "  </div>\n";
+        echo "</div>\n";
+      }
+    } else {
+      echo "<div class=\"row\">\n";
+      echo "  <div class=\"col-md-7\">\n";
+      echo "    <div class=\"panel panel-primary\">\n";
+      echo "      <div class=\"panel-heading\"><strong>$l_updfollowinginfo</strong></div>\n";
+      echo "      <div class=\"panel-body\">\n";
+      $q_sd  = "select * from USERS where user_id='$identif_form';";
+      $p_sd = db_query($q_sd);
+      while ($pi = $p_sd->fetch_object()) {
+        echo "<form method=\"post\" enctype=\"multipart/form-data\" action=\"".$_SERVER['REQUEST_URI']."\" autocomplete=\"off\">\n";
+        echo "<table class=\"table table-responsive table-condensed table-striped table-hover table-bordered\">\n";
+        table_row("fa fa-info-circle", "$l_id:", "", "none", "$identif_form");
+        echo "<input type=\"hidden\" name=\"identif_form\" value=\"$identif_form\">\n";
+        table_row("fa fa-user", "$l_username:", "", "none", "$pi->user_username", "$l_username");
+        echo "<input type=\"hidden\" name=\"loginname_form\" value=\"$pi->user_username\">\n";
+        table_row("fa fa-user", "$l_name:", "name_form", "text", "$pi->user_name", $l_name);
+        table_row("fa fa-user", "$l_idc:", "idc_form", "text", "$pi->user_idc", $l_idc);
+        $process_dob  = "<select name=\"day_form\">\n";
+        for ($i = 1; $i <= 31; $i++) {
+          if ($i == substr($pi->user_dateofbirth,8,2)) {
+            $process_dob .= "<option value=\"$i\" selected>$i</option>\n";
+          } else {
+            $process_dob .= "<option value=\"$i\">$i</option>\n";
+          }
+        }    
+        $process_dob .= "</select> de <select name=\"month_form\">\n";
+        for ($i = 1; $i <= 12; $i++) {
+          if ($i == substr($pi->user_dateofbirth,5,2)) {
+            $process_dob .= "<option value=\"$i\" selected>".literalmonth($i)."</option>\n";
+          } else {
+            $process_dob .= "<option value=\"$i\">".literalmonth($i)."</option>\n";
+          }
+        }
+        $process_dob .= "</select> de <select name=\"year_form\">\n";
+        for ($i = 1940; $i <= date("Y"); $i++) {
+          if ($i == substr($pi->user_dateofbirth,0,4)) {
+            $process_dob .= "<option value=\"$i\" selected>$i</option>\n";
+          } else {
+            $process_dob .= "<option value=\"$i\">$i</option>\n";
+          }
+        }
+        $process_dob .= "</select>\n";
+        table_row("fa fa-calendar", "$l_dob:", "", "none", "$process_dob");
+        table_row("fa fa-envelope", "$l_email:", "email_form", "text", "$pi->user_email", $l_email);
+        table_row("fa fa-phone", "$l_phonenumber:", "phonenumber_form", "text", "$pi->user_phonenumber", $l_phonenumber);
+        $process_city  = "<select name=\"city_form\">\n";
+        $process_city .= " <option value=\"\">--</option>\n";
+        $s_c = "select * from CITIES order by city_name;";
+        $q_c = db_query($s_c);
+        while ($pc=$q_c->fetch_object()) {
+          if ($pc->city_id == $pi->city_id) {
+            $process_city .= " <option value=\"$pc->city_id\" selected>$pc->city_name</option>\n";
+          } else {
+            $process_city .= " <option value=\"$pc->city_id\">$pc->city_name</option>\n";
+          }
+        }
+        $process_city .= "</select>\n";
+        table_row("fa fa-map-o", "$l_city:", "", "none", "$process_city");
+        table_row("fa fa-map-marker", "$l_address:", "address_form", "textarea", "$pi->user_address", $l_address);
+        $process_department  = "<select name=\"department_form\">\n";
+        $process_department .= " <option value=\"\">--</option>\n";
+        $s_d = "select * from DEPARTMENTS order by department_name;";
+        $q_d = db_query($s_d);
+        while ($pd=$q_d->fetch_object()) {
+          if ($pd->department_id == $pi->department_id) {
+            $process_department .= " <option value=\"$pd->department_id\" selected>$pd->department_name</option>\n";
+          } else {
+            $process_department .= " <option value=\"$pd->department_id\">$pd->department_name</option>\n";
+          }
+        }
+        $process_department .= "</select>\n";
+        table_row("fa fa-location-arrow", "$l_department:", "", "none", "$process_department");
+        echo "<input type=\"hidden\" name=\"process_currentstatus\" value=\"$pi->user_status\">\n";
+        $display_status  = "<select name=\"process_status\">\n";
+        $s_s = "select * from USERSTATUS where us_id>0 order by us_name;";
+        $q_s = db_query($s_s);
+        while ($pss=$q_s->fetch_object()) {
+          if ($pss->us_id == $pi->user_status) {
+            $display_status .= "<option value=\"$pss->us_id\" selected>$pss->us_name</option>\n";
+          } else {
+            $display_status .= "<option value=\"$pss->us_id\">$pss->us_name</option>\n";
+          }
+        }
+        $display_status .= "</select>\n";
+        table_row("fa fa-certificate", "$l_status:", "", "none", "$display_status");
+        echo "<input name=\"submit_form\" value=\"1\" type=\"hidden\">\n";
+        echo "<input name=\"modify_form\" value=\"1\" type=\"hidden\">\n";
+        echo "</table>\n";
+        $reset = "<a href=\"$PHPSELF\"><button type=\"button\" class=\"btn btn-danger\">$l_no</button></a>";
+        $submit = "<button type=\"submit\" class=\"btn btn-success\">$l_update</button>";
+        echo "$reset &nbsp;&nbsp;&nbsp; $submit";
+        echo "</form>\n";
+      }
+      echo "      </div>\n";
+      echo "    </div>\n";
+      echo "  </div>\n";
+      echo "</div>\n";
+    }
+  } else {
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-md-7\">\n";
+    echo "    <div class=\"panel panel-info\">\n";
+    echo "      <div class=\"panel-heading\">$l_admusers</div>\n";
+    echo "      <div class=\"panel-body\">\n";
+    echo "       $l_restricted\n";
+    go_back();
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+  text_close();
+?>
