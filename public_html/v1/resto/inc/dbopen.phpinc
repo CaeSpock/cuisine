@@ -1,0 +1,7 @@
+<?php
+    $dblink = new mysqli('localhost', $db_user, $db_pass, $db_name);
+    if ($dblink->connect_error) {
+      die('Error al conectar a la Base de Datos (' . $dblink->connect_errno . ') '
+            . $dblink->connect_error);
+    }
+?>

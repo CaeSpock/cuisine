@@ -1,0 +1,23 @@
+<?php
+  echo "<html>\n";
+  echo "  <head>\n";
+  echo "    <meta charset=\"iso-8859-1\" />\n";
+  include_once("$pathinc/rightclick.phpinc");
+  echo "    <title>.: $site_name :.</title>\n";
+  echo "  </head>\n";
+  echo "  <!--\n";
+  echo "    Conectado desde: $user_ip $user_host $user_user\n";
+  echo "             Usando: $user_client\n";
+  echo "       Fecha y hora: $date $time (Bolivia: $datebol $timebol)\n";
+  echo "  -->\n";
+  echo "  <body bgcolor=\"#c0c0c0\" color=\"#000000\">\n";
+  echo "  <center>\n";
+  echo "  <h1>$site_name</h1>\n";
+  echo "  <table border=\"0\" width=\"100%\">\n";
+  echo "  <tr>\n";
+  echo "   <td align=\"center\"><font face=\"Tahoma, Verdana, Arial\" size=\"2\">\n";
+  echo "    <a href=\".\">$l_menumain</a> | <a href=\"dailymenu.php\">$l_menudm</a> | <a href=\"contact.php\">$l_menucontact</a>\n";
+  echo "   </font></td>\n";
+  echo "  </tr>\n";
+  echo "  <tr>\n";
+  echo "   <td align=\"left\"><font face=\"Tahoma, Verdana, Arial\" size=\"2\">\n";

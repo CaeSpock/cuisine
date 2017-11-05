@@ -1,0 +1,51 @@
+<?php
+    if ($skcv_level_id >= 1) { // Usuarios
+      if ($action == "dashboard") { include_once("$pathsys/dashboard.phpinc"); }
+      if ($action == "infolacuisine") { include_once("$pathsys/infolacuisine.phpinc"); }
+      if ($action == "updatedata") { include_once("$pathsys/updatedata.phpinc"); }
+      if ($action == "updatepass") { include_once("$pathsys/updatepass.phpinc"); }
+      if ($action == "documents") { include_once("$pathsys/documents.phpinc"); }
+    }
+    if ($skcv_level_id >= 40) { // Facturacion
+      if ($action == "addregistro") { include_once("$pathsys/addregistro.phpinc"); }
+      if ($action == "buscarregistros") { include_once("$pathsys/buscarregistros.phpinc"); }
+      if ($action == "reporegistros") { include_once("$pathsys/reporegistros.phpinc"); }
+    }
+    if ($skcv_level_id >= 42) { // Facturacion+
+      if ($action == "reservarfactura") { include_once("$pathsys/reservarfactura.phpinc"); }
+    }
+    if ($skcv_level_id >= 48) { // Monitoreo Contabilidad
+      if ($action == "compxingreso") { include_once("$pathsys/compxingreso.phpinc"); }
+      if ($action == "compxegreso") { include_once("$pathsys/compxegreso.phpinc"); }
+      if ($action == "compxtraspaso") { include_once("$pathsys/compxtraspaso.phpinc"); }
+    }
+    if ($skcv_level_id >= 50) { // Contabilidad
+      if ($action == "admcats") { include_once("$pathsys/admcats.phpinc"); }
+      if ($action == "admcphotos") { include_once("$pathsys/admcphotos.phpinc"); }
+      if ($action == "admproducts") { include_once("$pathsys/admproducts.phpinc"); }
+      if ($action == "admpphotos") { include_once("$pathsys/admpphotos.phpinc"); }
+    }
+    if ($skcv_level_id >= 75) { // Gerencias
+      if ($action == "verusuario") { include_once("$pathsys/verusuario.phpinc"); }
+      if ($action == "crearusuario") { include_once("$pathsys/crearusuario.phpinc"); }
+      if ($action == "updusuario") { include_once("$pathsys/updusuario.phpinc"); }
+      if ($action == "admusers") { include_once("$pathsys/admusers.phpinc"); }
+      if ($action == "createuser") { include_once("$pathsys/createuser.phpinc"); }
+      if ($action == "updusers") { include_once("$pathsys/updusers.phpinc"); }
+      if ($action == "asignarciudades") { include_once("$pathsys/asignarciudades.phpinc"); }
+      if ($action == "asignarudn") { include_once("$pathsys/asignarudn.phpinc"); }
+      if ($action == "vermonitoreocontabilidad") { include_once("$pathsys/vermonitoreocontabilidad.phpinc"); }
+      if ($action == "crearmonitoreocontabilidad") { include_once("$pathsys/crearmonitoreocontabilidad.phpinc"); }
+      if ($action == "updmonitoreocontabilidad") { include_once("$pathsys/updmonitoreocontabilidad.phpinc"); }
+      if ($action == "vercontabilidad") { include_once("$pathsys/vercontabilidad.phpinc"); }
+      if ($action == "crearcontabilidad") { include_once("$pathsys/crearcontabilidad.phpinc"); }
+      if ($action == "updcontabilidad") { include_once("$pathsys/updcontabilidad.phpinc"); }
+      if ($action == "updatepassusers") { include_once("$pathsys/updatepassusers.phpinc"); }
+      if ($action == "changelog") { include_once("$pathsys/changelog.phpinc"); }
+    }
+    if ($skcv_level_id >= 100) { // Adm de sistema
+      if ($action == "vergerencia") { include_once("$pathsys/vergerencia.phpinc"); }
+      if ($action == "creargerencia") { include_once("$pathsys/creargerencia.phpinc"); }
+      if ($action == "updgerencia") { include_once("$pathsys/updgerencia.phpinc"); }
+    }
+?>

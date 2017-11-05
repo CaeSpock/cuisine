@@ -1,0 +1,131 @@
+<?php
+  // Menu
+  $activepagemenu = "class=\"selected\"";
+  $activecollapse = "class=\"active\"";
+
+  $dashboard_activa = "";
+  $infolacuisine_activa = "";
+  $updatedata_activa = "";
+  $updatepass_activa = "";
+  $documents_activa = "";
+  $addregistro_activa = "";
+  $emitirmovil_activa = "";
+  $reservarfactura_activa = "";
+  $buscarregistros_activa = "";
+  $reporegistros_activa = "";
+  $compxingreso_activa = "";
+  $compxegreso_activa = "";
+  $compxtraspaso_activa = "";
+  $admcats_activa = "";
+  $admproducts_activa = "";
+  $admusers_activa = "";
+  $vermonitoreocontabilidad_activa = "";
+  $vercontabilidad_activa = "";
+  $vergerencia_activa = "";
+
+  $opciones_collapse = "";
+  $registro_collapse = "";
+  $reportes_collapse = "";
+  $contabilidad_collapse = "";
+  $usuarios_collapse = "";
+
+  // Dashboard
+  if ($action == "dashboard") { $dashboard_activa = $activepagemenu; }
+  if ($action == "changelog") { $dashboard_activa = $activepagemenu; }
+  // Opciones
+  if ($action == "infolacuisine") { $infolacuisine_activa = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "updatedata") { $updatedata_activa = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "updatepass") { $updatepass_activa = $activepagemenu; $opciones_collapse = $activecollapse; }
+  if ($action == "documents") { $documents_activa = $activepagemenu; $opciones_collapse = $activecollapse; }
+  // Facturacion
+  if ($action == "addregistro") { $addregistro_activa = $activepagemenu; $registro_collapse = $activecollapse; }
+  if ($action == "emitirmovil") { $emitirmovil_activa = $activepagemenu; $registro_collapse = $activecollapse; }
+  if ($action == "reservarfactura") { $reservarfactura_activa = $activepagemenu; $registro_collapse = $activecollapse; }
+  if ($action == "buscarregistros") { $buscarregistros_activa = $activepagemenu; $registro_collapse = $activecollapse; }
+  // Estadisticas
+  if ($action == "compxingreso") { $compxingreso_activa = $activepagemenu; $reportes_collapse = $activecollapse; }
+  if ($action == "compxegreso") { $compxegreso_activa = $activepagemenu; $reportes_collapse = $activecollapse; }
+  if ($action == "compxtraspaso") { $compxtraspaso_activa = $activepagemenu; $reportes_collapse = $activecollapse; }
+  // Contabilidad
+  if ($action == "admcats") { $admcats_activa = $activepagemenu; $contabilidad_collapse = $activecollapse; }
+  if ($action == "admcphotos") { $admcats_activa = $activepagemenu; $contabilidad_collapse = $activecollapse; }
+  if ($action == "admproducts") { $admproducts_activa = $activepagemenu; $contabilidad_collapse = $activecollapse; }
+  if ($action == "admpphotos") { $admproducts_activa = $activepagemenu; $contabilidad_collapse = $activecollapse; }
+  // Usuarios
+  if ($action == "admusers") { $admusers_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "updusers") { $admusers_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "createuser") { $admusers_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "vermonitoreocontabilidad") { $vermonitoreocontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "updmonitoreocontabilidad") { $vermonitoreocontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "crearmonitoreocontabilidad") { $vermonitoreocontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "vercontabilidad") { $vercontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "updcontabilidad") { $vercontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "crearcontabilidad") { $vercontabilidad_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "vergerencia") { $vergerencia_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "updgerencia") { $vergerencia_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+  if ($action == "creargerencia") { $vergerencia_activa = $activepagemenu; $usuarios_collapse = $activecollapse; }
+
+  // echo "      <!-- navbar side -->\n";
+  echo "      <nav class=\"navbar-default navbar-static-side\" role=\"navigation\">\n";
+  // echo "        <!-- sidebar-collapse -->\n";
+  echo "        <div class=\"sidebar-collapse\">\n";
+  // echo "          <!-- side-menu -->\n";
+  echo "          <ul class=\"nav\" id=\"side-menu\">\n";
+  if ($skcv_level_id >= 1) { // Todos
+    echo "            <li class=\"selected\"><br /><br /></li>\n";
+    echo "            <li $dashboard_activa><a href=\"$PHPSELF?action=dashboard\"><i class=\"fa fa-dashboard fa-fw\"></i>$l_dashboard</a></li>\n";
+    echo "            <li $opciones_collapse><a href=\"#\"><i class=\"fa fa-sitemap fa-fw\"></i>$l_basicoptions <span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $infolacuisine_activa><a href=\"$PHPSELF?action=infolacuisine\">$l_whatis</a></li>\n";
+    echo "              <li $updatedata_activa><a href=\"$PHPSELF?action=updatedata\">$l_updatedata</a></li>\n";
+    echo "              <li $updatepass_activa><a href=\"$PHPSELF?action=updatepass\">$l_updatepass</a></li>\n";
+    echo "              <li $documents_activa><a href=\"$PHPSELF?action=documents\">$l_documentation</a></li>\n";
+    echo "            </ul>\n";
+    // echo "            <!-- second-level-items -->\n";
+    echo "            </li>\n";
+  }
+  if ($skcv_level_id >= 40) { // Registros
+    echo "          <li $registro_collapse><a href=\"#\"><i class=\"fa fa-file-text-o  fa-fw\"></i> Registros<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $addregistro_activa><a href=\"$PHPSELF?action=addregistro\">Adicionar Registro</a></li>\n";
+    echo "              <li $buscarregistros_activa><a href=\"$PHPSELF?action=buscarregistros\">Buscar Registros</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 1) { // Todos
+    echo "          <li $reportes_collapse><a href=\"#\"><i class=\"fa fa-line-chart\"></i> Reportes<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $reporegistros_activa><a href=\"$PHPSELF?action=reporegistros\">Reporte de Registros</a></li>\n";
+    if ($skcv_level_id >= 48 ) { // Monitoreo Contabilidad
+      echo "              <li $compxingreso_activa><a href=\"$PHPSELF?action=compxingreso\">Comprobante de Ingreso</a></li>\n";
+      echo "              <li $compxegreso_activa><a href=\"$PHPSELF?action=compxegreso\">Comprobante de Egreso</a></li>\n";
+      echo "              <li $compxtraspaso_activa><a href=\"$PHPSELF?action=compxtraspaso\">Comprobante de Traspaso</a></li>\n";
+    }
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 50 ) { // Contabilidad
+    echo "          <li $contabilidad_collapse><a href=\"#\"><i class=\"fa fa-tasks\"></i> $l_products<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $admcats_activa><a href=\"$PHPSELF?action=admcats\">$l_admcats</a></li>\n";
+    echo "              <li $admproducts_activa><a href=\"$PHPSELF?action=admproducts\">$l_admprods</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 75) { // Gerencia
+    echo "          <li $usuarios_collapse><a href=\"#\"><i class=\"fa fa-users\"></i> $l_users<span class=\"fa arrow\"></span></a>\n";
+    echo "            <ul class=\"nav nav-second-level\">\n";
+    echo "              <li $admusers_activa><a href=\"$PHPSELF?action=admusers\">$l_admusers</a></li>\n";
+    echo "            </ul>\n";
+    echo "          </li>\n";
+  }
+  if ($skcv_level_id >= 1) { // Todos
+    echo "          <li><a href=\"$PHPSELF?action=logout&logout_attempt=1\"><i class=\"fa fa-exclamation-circle\"></i> $l_logout</a></li>\n";
+  }
+  echo "          </ul>\n";
+  // echo "          <!-- end side-menu -->\n";
+  echo "        </div>\n";
+  // echo "        <!-- end sidebar-collapse -->\n";
+  echo "      </nav>\n";
+  // echo "      <!-- end navbar side -->\n";
+
