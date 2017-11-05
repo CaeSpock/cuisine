@@ -13,6 +13,11 @@ Hope you enjoy this small system, suggestions and comments are always welcomed.
 CAnibarro@whitesith.com
 
 This System uses:
+
 . Web Design based on the SIMINTA Bootstrap Design by Randy Riolis https://github.com/r4nd1/template-cpanel-siminta
+
 . Bootstrap from http://getbootstrap.com/
+
 . FontAwesome from http://fontawesome.io/
+
+Information neeed to install the system can be found inside the resources subdirectory.
