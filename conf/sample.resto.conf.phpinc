@@ -1,0 +1,54 @@
+<?php
+  // Web Site info
+      // System Name:
+      $site_name = "La Cuisine";
+      // System URL ie http://www.yoursite.com/cuisine/
+       $site_url = "http://yoursiteurl/youruser/";
+    $site_slogan = "Restaurant Web System";
+      // Site Admin name and email
+     $site_aname = "Carlos Anibarro";
+    $site_aemail = "cae@anibarro.org";
+      // When Emails are sent, use this email address and this from field
+     $site_email = "cuisine@anibarro.org";
+      $site_from = "Sistema La Cuisine";
+
+      // Please dont change this, in order to respect GPL
+      $site_copy = "&copy; 2017 - White Sith Solutions";
+       $site_ver = "1.0.0";
+   $site_admname = "Carlos Anibarro";
+  $site_admemail = "cae@anibarro.org";
+
+  // Data Base information, please change
+  $db_name = "cuisine";
+  $db_user = "cuisine";
+  $db_pass = "cu1s1n3";
+
+  // Language
+  $language = "english";
+
+  // Daily menu reservations schedule
+  $dmtime_start = "00:00:00";
+  $dmtime_end = "10:30:00";
+
+  // Constants
+  // How many lines to display on big items
+  $perPage = 15;
+  // Values for the ok and no ok graphs
+  $label_ok = "<font color=\"#008000\">v</font>";
+  $label_nook = "<font color=\"#800000\">x</font>";
+
+  // Logging
+  // Log SQL and Operations? 1=yes 0=no
+  $log_sql = 1;
+  $log_ops = 1;
+  // Suffix for the log filenames
+  // You can use "-sql.txt" or simply ".txt";
+  $file_sqllog = ".txt";
+  $file_opslog = ".txt";
+
+/*
+  ## Conventions
+  $skcg_* <- Cookies
+  $skcv_* <- Variables
+*/
+?>

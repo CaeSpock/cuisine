@@ -1,0 +1,59 @@
+INSTALL
+
+1. Directory and file structure
+   This software has the following structure
+   / <- the user’s account, could be for example /home/cuisine
+   /logs <- where the system logs are stored
+   --/operaciones <- where the operations logs are stored
+   --/sql <- where the sql operations are stored 
+   /conf <- where the configurations are stored
+   /public_html <- where the web pages are
+   --/photos <- where product and categories photos are uploaded
+     --/v1 <- where the version pages are located
+       --/admin <- where the admin system is located
+       --/resto <- where the user view is located
+   /resources <- where installation files and other resources external to the main system are located
+
+2. Installation
+   Please be sure to copy the complete file structure to your user directory.
+   You will need to configure manually the routes to the configuration files
+   and set permissions on the logs and photos directories.
+
+2.1 Configure directory permissions
+    Please be sure that the web user can write to the logs and photos directories.
+    Simple you can assign the following “all access” permissions to both directories
+      chmod 777 /home/cuisine/logs
+      chmod 777 /home/cuisine/public_html/photos
+
+2.2 Database creation
+    Now, let’s crate a data base and load the initial information to the system
+    In mySQL or MariaDB, lets create a user that has all access to a data base:
+    In the following example, we will create the database "cuisine", the user "cuisine"
+    (password will be cu1s1n3) and will later grant full access to this user to the data base created.
+      create if not exists database cuisine;
+      grant all privileges on cuisine.* to cuisine@localhost identified by 'cu1s1n3';
+      flush privileges
+    Now, we will load the initial configuration to the data base.
+    The initial configuration is found in the file “initial-db.sql” inside the resources directory:
+      mysql -u cuisine -p cuisine < initial-db.sql
+    please use the password when prompted.
+    This will load an initial configuration needed to use the system.
+
+2.3 Configure the system for use
+    Inside the /conf directory you will find two sample configuration files.
+    One for the main admin system and the other for the user view (resto).
+    First, copy the two sample files to the definitive filenames:
+      cp sample.admin.conf.phpinc admin.conf.phpinc
+      cp sample.resto.conf.phpinc resto.conf.phpinc
+    Edit the two files, which are separated to reflect the system name, language and most important, 
+    the database information.
+ 
+2.4 Initial user
+    The initial admin user is “admin” with password “admin” without quotes.
+
+2.5 Initial access
+    In your browser, access http://yourhost/youruser/v1/admin/
+    The user view is available at http://yourhost/youruser/v1/resto/
+
+2.6 Enjoy!
+    
