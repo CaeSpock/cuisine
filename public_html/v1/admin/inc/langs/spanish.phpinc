@@ -14,6 +14,7 @@
   $l_admdailymenu2 = "Administrar Men&uacute; Diario";
   $l_admprods = "Adm productos";
   $l_admprods2 = "Administrar productos";
+  $l_all = "Todos";
   $l_amount = "Monto";
   $l_at = "a las";
 
